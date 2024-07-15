@@ -1,194 +1,718 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    "title": "Oneloop API",
+    "version": "1.0.0",
+    "description": "API Key Management"
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "Workspace": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "teamId": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        },
+        "required": ["id", "name", "teamId", "createdAt", "updatedAt"]
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
+      "CreateWorkspaceResponse": {
+        "type": "object",
+        "properties": {
+          "workspace": { "$ref": "#/components/schemas/Workspace" }
+        },
+        "required": ["workspace"]
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
         "type": "object",
         "properties": {
           "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMinimum": true
+              },
+              "message": { "type": "string" }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error"]
+      },
+      "CreateWorkspaceRequest": {
+        "type": "object",
+        "properties": { "name": { "type": "string" } },
+        "required": ["name"]
+      },
+      "RetrieveWorkspaceResponse": {
+        "type": "object",
+        "properties": {
+          "workspaces": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Workspace" }
+          }
+        },
+        "required": ["workspaces"]
+      },
+      "RetrieveWorkspaceByIdResponse": {
+        "type": "object",
+        "properties": {
+          "workspace": { "$ref": "#/components/schemas/Workspace" }
+        },
+        "required": ["workspace"]
+      },
+      "WorkspaceScope": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "representation": { "type": "string" },
+          "description": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        },
+        "required": [
+          "id",
+          "name",
+          "representation",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RetrieveAllWorkspaceScopesResponse": {
+        "type": "object",
+        "properties": {
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WorkspaceScope" }
+          }
+        },
+        "required": ["scopes"]
+      },
+      "CreateWorkspaceScopeResponse": {
+        "type": "object",
+        "properties": {
+          "scope": { "$ref": "#/components/schemas/WorkspaceScope" }
+        },
+        "required": ["scope"]
+      },
+      "CreateWorkspaceScopeRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "CreateApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "maskedKey": { "type": "string" },
+              "key": { "type": "string" },
+              "prefix": { "type": "string", "nullable": true },
+              "expiresAt": {
+                "type": "integer",
+                "nullable": true,
+                "minimum": 0,
+                "exclusiveMinimum": true
+              },
+              "totalUsageLeft": {
+                "type": "integer",
+                "nullable": true,
+                "minimum": 0,
+                "exclusiveMinimum": true
+              },
+              "scopes": { "type": "array", "items": { "type": "string" } },
+              "enabled": { "type": "boolean" },
+              "deleted": { "type": "boolean" },
+              "createdAt": { "type": "string" },
+              "updatedAt": { "type": "string" }
+            },
+            "required": [
+              "id",
+              "name",
+              "maskedKey",
+              "key",
+              "prefix",
+              "expiresAt",
+              "totalUsageLeft",
+              "scopes",
+              "enabled",
+              "deleted",
+              "createdAt",
+              "updatedAt"
+            ]
+          }
+        },
+        "required": ["apiKey"]
+      },
+      "CreateApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "workspaceId": { "type": "string" },
+          "prefix": { "type": "string" },
+          "expiresAt": {
             "type": "integer",
-            "format": "int32"
+            "minimum": 0,
+            "exclusiveMinimum": true
           },
-          "message": {
-            "type": "string"
+          "totalUsageAllowed": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "scopes": { "type": "array", "items": { "type": "string" } },
+          "enabled": { "type": "boolean" }
+        },
+        "required": ["name", "workspaceId", "scopes", "enabled"]
+      },
+      "ApiKey": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "maskedKey": { "type": "string" },
+          "prefix": { "type": "string", "nullable": true },
+          "expiresAt": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "totalUsageLeft": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "scopes": { "type": "array", "items": { "type": "string" } },
+          "enabled": { "type": "boolean" },
+          "deleted": { "type": "boolean" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        },
+        "required": [
+          "id",
+          "name",
+          "maskedKey",
+          "prefix",
+          "expiresAt",
+          "totalUsageLeft",
+          "scopes",
+          "enabled",
+          "deleted",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RetrieveApiKeysResponse": {
+        "type": "object",
+        "properties": {
+          "apiKeys": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApiKey" }
+          }
+        },
+        "required": ["apiKeys"]
+      },
+      "RetrieveApiKeyByIdResponse": {
+        "type": "object",
+        "properties": { "apiKey": { "$ref": "#/components/schemas/ApiKey" } },
+        "required": ["apiKey"]
+      },
+      "VerifyApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "expiresAt": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "requestedScopes": { "type": "array", "items": { "type": "string" } },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "EXPIRED",
+              "DISABLED",
+              "DELETED",
+              "RATE_LIMITED",
+              "USAGE_LIMITED",
+              "INVALID_SCOPES",
+              "INVALID"
+            ]
+          }
+        },
+        "required": ["expiresAt", "requestedScopes", "status"]
+      },
+      "VerifyApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "workspaceId": { "type": "string" },
+          "key": { "type": "string" },
+          "requestedScopes": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["workspaceId", "key", "requestedScopes"]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/v1/workspace": {
+      "post": {
+        "summary": "Create a workspace",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkspaceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkspaceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Retrieve a workspace",
+        "responses": {
+          "200": {
+            "description": "Workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveWorkspaceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
           }
         }
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "/api/v1/workspace/:{id}": {
+      "get": {
+        "summary": "Retrieve a workspace",
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveWorkspaceByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/:{id}/scopes": {
+      "get": {
+        "summary": "Retrieve workspace scopes",
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace scopes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveAllWorkspaceScopesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/:{id}/scope": {
+      "post": {
+        "summary": "Create a workspace scope",
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkspaceScopeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWorkspaceScopeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api-key": {
+      "post": {
+        "summary": "Create an API key",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateApiKeyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateApiKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/:{id}/api-key": {
+      "get": {
+        "summary": "Retrieve API keys for a workspace",
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The API keys",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveApiKeysResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/:{id}/api-key/:{akid}": {
+      "get": {
+        "summary": "Retrieve an API key by id",
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": { "type": "string", "description": "The API key id." },
+            "required": true,
+            "name": "akid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveApiKeyByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api-key/verify": {
+      "post": {
+        "summary": "Verify a key for a given workspace",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VerifyApiKeyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyApiKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
       }
     }
   }
