@@ -28,9 +28,7 @@
   "tabs": [
     {
       "name": "API Reference",
-      "openapi": "/api-reference/openapi.json",
-      "url": "api-reference",
-      "icon": "square-terminal"
+      "url": "api-reference"
     }
   ],
   "navigation": [
@@ -43,11 +41,11 @@
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "API Reference",
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "API Documentation",
+      "group": "Endpoints",
       "pages": [
         {
           "group": "Workspace",
