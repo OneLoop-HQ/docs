@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@oneloop.ai"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://dashboard.oneloop.ai"
   },
   "tabs": [
     {
@@ -33,47 +33,52 @@
       "icon": "square-terminal"
     }
   ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
-    }
-  ],
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
-    },
-    {
-      "group": "Essentials",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "documentation/introduction",
+        "documentation/quickstart",
+        "documentation/development"
       ]
     },
     {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
+    },
+    {
+      "group": "API Documentation",
+      "pages": [
+        {
+          "group": "Workspace",
+          "pages": [
+            "api-reference/endpoints/retrieve-a-workspace",
+            "api-reference/endpoints/create-a-workspace",
+            "api-reference/endpoints/retrieve-a-workspace-1"
+          ]
+        },
+        {
+          "group": "Scopes",
+          "pages": [
+            "api-reference/endpoints/retrieve-workspace-scopes",
+            "api-reference/endpoints/create-a-workspace-scope"
+          ]
+        },
+        {
+          "group": "Api Keys",
+          "pages": [
+            "api-reference/endpoints/create-an-api-key",
+            "api-reference/endpoints/retrieve-api-keys-for-a-workspace",
+            "api-reference/endpoints/retrieve-an-api-key-by-id",
+            "api-reference/endpoints/verify-a-key-for-a-given-workspace",
+            "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
+            "api-reference/endpoints/deletes-a-key-for-a-given-workspace"
+          ]
+        }
+      ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "linkedin": "https://www.linkedin.com/company/oneloop-hq"
   }
 }
