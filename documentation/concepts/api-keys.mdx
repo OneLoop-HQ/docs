@@ -1,0 +1,23 @@
+---
+title: API Keys
+---
+
+API Keys are issued under a Workspace. They are meant for your customers. 
+
+With our SDKs and embeddable components, you can surface API functionality to your customers.
+
+<CodeGroup>
+
+```typescript typescript
+import oneloop from '@api/oneloop';
+
+oneloop.auth('TOKEN');
+
+await oneloop.postApiV1Workspace({
+    name: 'workspace'
+});
+```
+
+
+</CodeGroup>
+

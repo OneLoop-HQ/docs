@@ -36,8 +36,15 @@
       "group": "Get Started",
       "pages": [
         "documentation/introduction",
-        "documentation/quickstart",
-        "documentation/development"
+        "documentation/quickstart"
+      ]
+    },
+    {
+      "group": "Concepts",
+      "pages": [
+        "documentation/concepts/sdk-keys",
+        "documentation/concepts/workspace",
+        "documentation/concepts/api-keys"
       ]
     },
     {
