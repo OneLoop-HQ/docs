@@ -5,6 +5,12 @@
     "version": "1.0.0",
     "description": "API Key Management"
   },
+  "servers": [
+    {
+      "url": "https://prod.oneloop.ai",
+      "description": "Production server"
+    }
+  ],
   "components": {
     "schemas": {
       "Workspace": {
@@ -19,6 +25,22 @@
           "teamId": {
             "type": "string"
           },
+          "defaultKeyPrefix": {
+            "type": "string",
+            "nullable": true
+          },
+          "defaultAllowedIPs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "defaultExpiration": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
           "createdAt": {
             "type": "string"
           },
@@ -30,6 +52,9 @@
           "id",
           "name",
           "teamId",
+          "defaultKeyPrefix",
+          "defaultAllowedIPs",
+          "defaultExpiration",
           "createdAt",
           "updatedAt"
         ]
@@ -106,6 +131,17 @@
           "workspace"
         ]
       },
+      "UpdateWorkspaceResponse": {
+        "type": "object",
+        "properties": {
+          "workspace": {
+            "$ref": "#/components/schemas/Workspace"
+          }
+        },
+        "required": [
+          "workspace"
+        ]
+      },
       "WorkspaceScope": {
         "type": "object",
         "properties": {
@@ -169,12 +205,43 @@
           "name": {
             "type": "string"
           },
+          "representation": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           }
         },
         "required": [
-          "name"
+          "name",
+          "representation"
+        ]
+      },
+      "ApiKeyScope": {
+        "type": "object",
+        "properties": {
+          "representation": {
+            "type": "string"
+          },
+          "create": {
+            "type": "boolean"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "update": {
+            "type": "boolean"
+          },
+          "del": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "representation",
+          "create",
+          "read",
+          "update",
+          "del"
         ]
       },
       "ApiKey": {
@@ -205,10 +272,13 @@
             "minimum": 0,
             "exclusiveMinimum": true
           },
+          "limitUsage": {
+            "type": "boolean"
+          },
           "scopes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ApiKeyScope"
             }
           },
           "enabled": {
@@ -231,6 +301,7 @@
           "prefix",
           "expiresAt",
           "totalUsageLeft",
+          "limitUsage",
           "scopes",
           "enabled",
           "deleted",
@@ -289,7 +360,7 @@
           "scopes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ApiKeyScope"
             }
           },
           "enabled": {
@@ -340,7 +411,7 @@
           "requestedScopes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ApiKeyScope"
             }
           },
           "status": {
@@ -375,7 +446,7 @@
           "requestedScopes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ApiKeyScope"
             }
           }
         },
@@ -420,6 +491,30 @@
         },
         "required": [
           "apiKey"
+        ]
+      },
+      "RefillApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "$ref": "#/components/schemas/ApiKey"
+          }
+        },
+        "required": [
+          "apiKey"
+        ]
+      },
+      "RefillApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "amount"
         ]
       }
     },
@@ -548,6 +643,71 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RetrieveWorkspaceByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Updates a workspace",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The workspace id."
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkspaceResponse"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateWorkspaceResponse"
                 }
               }
             }
@@ -1042,6 +1202,82 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RotateApiKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspace/:{id}/api-key/:{akid}/refill": {
+      "post": {
+        "summary": "Refill a key for a given workspace",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The workspace id."
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "The API key id."
+            },
+            "required": true,
+            "name": "akid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefillApiKeyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefillApiKeyResponse"
                 }
               }
             }
