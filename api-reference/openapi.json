@@ -5,6 +5,11 @@
     "version": "1.0.0",
     "description": "API Key Management"
   },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "servers": [
     {
       "url": "https://prod.oneloop.ai",
@@ -12,6 +17,12 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
     "schemas": {
       "Workspace": {
         "type": "object",
@@ -70,7 +81,7 @@
           "workspace"
         ]
       },
-      "Error": {
+      "ErrorResponse": {
         "type": "object",
         "properties": {
           "error": {
@@ -523,7 +534,13 @@
   "paths": {
     "/api/v1/workspace": {
       "post": {
+        "operationId": "createWorkspace",
         "summary": "Create a workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -549,7 +566,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -559,7 +576,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -569,7 +586,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -577,7 +594,13 @@
         }
       },
       "get": {
+        "operationId": "getWorkspace",
         "summary": "Retrieve a workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Workspace",
@@ -594,7 +617,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -604,7 +627,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -614,7 +637,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -624,7 +647,13 @@
     },
     "/api/v1/workspace/:{id}": {
       "get": {
+        "operationId": "getWorkspaceById",
         "summary": "Retrieve a workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -652,7 +681,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -662,7 +691,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -672,7 +701,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -680,7 +709,13 @@
         }
       },
       "patch": {
+        "operationId": "updateWorkspace",
         "summary": "Updates a workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -717,7 +752,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -727,7 +762,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -737,7 +772,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -747,7 +782,13 @@
     },
     "/api/v1/workspace/:{id}/scopes": {
       "get": {
+        "operationId": "getWorkspaceScopes",
         "summary": "Retrieve workspace scopes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -775,7 +816,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -785,7 +826,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -795,7 +836,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -805,7 +846,13 @@
     },
     "/api/v1/workspace/:{id}/scope": {
       "post": {
+        "operationId": "createWorkspaceScopes",
         "summary": "Create a workspace scope",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -842,7 +889,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -852,7 +899,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -862,7 +909,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -872,7 +919,13 @@
     },
     "/api/v1/api-key": {
       "post": {
+        "operationId": "createApiKey",
         "summary": "Create an API key",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -898,7 +951,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -908,7 +961,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -918,7 +971,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -928,7 +981,13 @@
     },
     "/api/v1/workspace/:{id}/api-key": {
       "get": {
+        "operationId": "getApiKeys",
         "summary": "Retrieve API keys for a workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -956,7 +1015,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -966,7 +1025,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -976,7 +1035,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -986,7 +1045,13 @@
     },
     "/api/v1/workspace/:{id}/api-key/:{akid}": {
       "get": {
+        "operationId": "getApiKeyById",
         "summary": "Retrieve an API key by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1023,7 +1088,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1033,7 +1098,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1043,7 +1108,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1051,7 +1116,13 @@
         }
       },
       "delete": {
+        "operationId": "deleteApiKey",
         "summary": "Delets a key for a given workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1088,7 +1159,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1098,7 +1169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1108,7 +1179,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1118,7 +1189,13 @@
     },
     "/api/v1/api-key/verify": {
       "post": {
+        "operationId": "rotateApiKey",
         "summary": "Verify a key for a given workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1144,7 +1221,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1154,7 +1231,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1164,7 +1241,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1174,7 +1251,13 @@
     },
     "/api/v1/workspace/:{id}/api-key/:{akid}/rotate": {
       "post": {
+        "operationId": "rotateApiKey",
         "summary": "Rotate a key for a given workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1211,7 +1294,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1221,7 +1304,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1231,7 +1314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1241,7 +1324,13 @@
     },
     "/api/v1/workspace/:{id}/api-key/:{akid}/refill": {
       "post": {
+        "operationId": "refillApiKey",
         "summary": "Refill a key for a given workspace",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "schema": {
@@ -1287,7 +1376,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1297,7 +1386,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1307,7 +1396,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
