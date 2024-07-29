@@ -1,0 +1,108 @@
+---
+title: "React"
+description: "Learn more about using Oneloop in your React App"
+---
+
+To get you easily started with providing all functionality around API Key management, we have created a React SDK that you can use in your React application.
+
+With a single line of code, you can add a component that will handle the entire API Key management process for you.
+
+### Backend - Get Link Token
+
+In your backend, set up a POST request to initialize a Oneloop session and get a `link_token` from <a href="/api-reference/endpoints/retrieve-a-workspace">Link Token</a> endpoint
+
+<CodeGroup>
+```bash bash
+curl 'https://prod.oneloop.ai/api/v1/link-token' 
+  -H 'authorization: Bearer <your_oneloop_sdk_key>' 
+  -H 'accept: application/json, text/plain, */*' 
+  -H 'content-type: application/json' 
+  --data-raw '{ 
+    "workspaceId":"workspaceId", 
+    "customerId":"customerId" 
+  }'
+```
+
+```javascript node
+fetch("https://prod.oneloop.ai/api/v1/link-token", {
+  method: "POST",
+  headers: {
+    authorization: "Bearer <your_oneloop_sdk_key>",
+    accept: "application/json, text/plain, */*",
+    "content-type": "application/json",
+  },
+  body: {
+    workspaceId: "workspaceId",
+    customerId: "customerId",
+  },
+});
+```
+
+</CodeGroup>
+
+Pass in your Production Access API key as a header.
+
+### Set up a React application using Vite
+
+Scaffold your new React application using <a href="https://vitejs.dev/guide/#scaffolding-your-first-vite-project">Vite</a>
+
+<CodeGroup>
+
+```bash npm
+npm create vite@latest oneloop-react -- --template react-ts
+cd clerk-react
+npm install
+npm run dev
+```
+
+</CodeGroup>
+
+### Install the React SDK
+
+Oneloop's <a>React SDK</a> gives you access to prebuilt components, hooks, and helpers for React.
+
+To get started using Oneloop with React, add the SDK to your project:
+
+<CodeGroup>
+
+```bash npm
+npm install @oneloop-hq/frontend-react-sdk
+```
+
+</CodeGroup>
+
+### Embed Oneloop API Key Manager
+
+Now make the same request in your frontend to get the `link_token` and initialize the Oneloop session.
+
+Feel free to pass `workspaceId` and `customerId` from your frontend. Or you can have them hardcoded in your backend.
+
+<Warning>
+  Please make sure **not to expose your Oneloop SDK key** in your frontend code.
+</Warning>
+
+```javascript ApiSettingsPage.tsx
+import { OneloopApiKeyManager } from "@oneloop-hq/frontend-react-sdk";
+import { useState } from "react";
+
+const WORKSPACE_ID = "<your-oneloop-workspace-id>";
+const CURRENT_CUSTOMER_ID = "<your-customer-id>";
+
+export default function Page() {
+  const [linkToken, setLinkToken] = useState<string>("ADD_GENERATED_LINK_TOKEN");
+
+  return (
+    <div>
+      {linkToken &&
+        <OneloopApiKeyManager
+          accentColor="#ADFF85"
+          description="Create a key that unlocks full API access, enabling extensive interaction with your account. Learn more"
+          textColor="#000000"
+          title="Standard keys"
+          token={linkToken}
+          darkMode={false}
+        />
+    </div>
+  );
+}
+```

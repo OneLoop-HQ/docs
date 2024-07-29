@@ -29,15 +29,16 @@
     {
       "name": "API Reference",
       "url": "api-reference"
+    },
+    {
+      "name": "SDK",
+      "url": "sdk"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "documentation/introduction",
-        "documentation/quickstart"
-      ]
+      "pages": ["documentation/introduction", "documentation/quickstart"]
     },
     {
       "group": "Concepts",
@@ -81,6 +82,14 @@
           ]
         }
       ]
+    },
+    {
+      "group": "SDK",
+      "pages": ["sdk/introduction"]
+    },
+    {
+      "group": "Quick Guides",
+      "pages": ["sdk/nodejs", "sdk/python", "sdk/react"]
     }
   ],
   "footerSocials": {
