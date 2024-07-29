@@ -5,16 +5,52 @@ description: "Let's get you up and running quickly."
 
 The goal of Oneloop is to simplify API Key mangement for your customers.
 
-If you find yourself spending time setting up API Keys for your customers, then Oneloop is for you. 
+If you find yourself spending time setting up API Keys for your customers, then Oneloop is for you.
 
 <Steps>
-  <Step title="First Step">
-    Create a workspace in the dashboard.
+  <Step title="Create Workspace">
+    Create a workspace in the dashboard. For example, we've created a workspace 'Sandbox'
+    <Frame caption="Here we created a workspace 'Sandbox'">
+      <img src="images/create_workspace.png" />
+    </Frame>
   </Step>
-  <Step title="Second Step">
+  <Step title="Create Root Key">
     Create a SDK Key in the Dashboard.
+    <img src="images/create_root_key.png" />
   </Step>
-  <Step title="Third Step">
-    Use the SDK along with the SDK Key to generate, delete, verify API Keys realtime etc.
+  <Step title="Use the SDK">
+    Use the SDK along with the SDK Key to generate, delete, verify api keys in realtime
+    <CodeGroup>
+      ```typescript typescript
+      import * as oneloop from "@oneloop-hq/oneloop-ts";
+
+      const oneloopClient = new oneloop.DefaultApi(
+        oneloop.createConfiguration({
+          authMethods: {
+            bearerAuth: {
+              tokenProvider: {
+                getToken: async () => {
+                  return "Bearer " + process.env.ONELOOP_KEY;
+                },
+              },
+            },
+          },
+        })
+      );
+      ```
+
+      ```python python
+      from oneloop_client import DefaultApi, Configuration, ApiClient
+
+      configuration = Configuration(
+        host="https://prod.oneloop.ai",
+        access_token=os.environ.get("ONELOOP_API_KEY")
+      )
+
+      api_client = DefaultApi(ApiClient(configuration))
+      ```
+    </CodeGroup>
   </Step>
 </Steps>
+
+For more information on SDK Keys and workspaces, check out Concepts tab
