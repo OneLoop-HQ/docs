@@ -11,22 +11,45 @@ description: 'Learn more about integrating Oneloop in your product'
 
 Production Url: https://prod.oneloop.ai
 
+OpenApi Specification: https://prod.oneloop.ai/openapi
+
 All API endpoints are authenticated using Bearer tokens in the `Authorization` HTTP header in the following format.
 
 ```
 Authorization: Bearer <TOKEN>
 ```
 
-If you are using one of the SDKs, then you can set the authorization header as such
+If you are using one of the SDKs, then you can set the authorization header based on the language.
+
+The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
 
 <CodeGroup>
+    ```typescript typescript
+    import * as oneloop from "@oneloop-hq/oneloop-ts";
 
-```typescript typescript
-import oneloop from '@api/oneloop';
+    const oneloopClient = new oneloop.DefaultApi(
+        oneloop.createConfiguration({
+            authMethods: {
+                bearerAuth: {
+                    tokenProvider: {
+                        getToken: async () => {
+                            return "Bearer " + process.env.ONELOOP_KEY;
+                        },
+                    },
+                },
+            },
+        })
+    );
+    ```
 
-oneloop.auth('TOKEN');
-```
+    ```python python
+    from oneloop_client import DefaultApi, Configuration, ApiClient
 
+    configuration = Configuration(
+        host="https://prod.oneloop.ai",
+        access_token=os.environ.get("ONELOOP_API_KEY")
+    )
+
+    api_client = DefaultApi(ApiClient(configuration))
+    ```
 </CodeGroup>
-
-The API Token can be generated in the [dashboard](https://dashboard.oneloop.ai)

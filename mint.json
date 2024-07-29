@@ -111,6 +111,13 @@
     {
       "group": "Quick Guides",
       "pages": ["sdk/nodejs", "sdk/python", "sdk/react"]
+    },
+    {
+      "group": "Starter Kit",
+      "pages": [
+        "sdk/starter-kits/express",
+        "sdk/starter-kits/fastapi"
+      ]
     }
   ],
   "footerSocials": {
