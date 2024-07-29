@@ -4,20 +4,36 @@ title: API Keys
 
 API Keys are issued under a Workspace. They are meant for your customers. 
 
-With our SDKs and embeddable components, you can surface API functionality to your customers.
+With our SDKs and embeddable frontend components, you can surface API Key functionality to your customers.
 
 <CodeGroup>
+    ```typescript typescript
+    import * as oneloop from "@oneloop-hq/oneloop-ts";
 
-```typescript typescript
-import oneloop from '@api/oneloop';
+    const oneloopClient = new oneloop.DefaultApi(
+        oneloop.createConfiguration({
+            authMethods: {
+                bearerAuth: {
+                    tokenProvider: {
+                        getToken: async () => {
+                            return "Bearer " + process.env.ONELOOP_KEY;
+                        },
+                    },
+                },
+            },
+        })
+    );
+    ```
 
-oneloop.auth('TOKEN');
+    ```python python
+    from oneloop_client import DefaultApi, Configuration, ApiClient
 
-await oneloop.postApiV1Workspace({
-    name: 'workspace'
-});
-```
+    configuration = Configuration(
+        host="https://prod.oneloop.ai",
+        access_token=os.environ.get("ONELOOP_API_KEY")
+    )
 
-
+    api_client = DefaultApi(ApiClient(configuration))
+    ```
 </CodeGroup>
 

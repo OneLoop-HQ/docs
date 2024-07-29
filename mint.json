@@ -46,9 +46,17 @@
     {
       "group": "Concepts",
       "pages": [
-        "documentation/concepts/sdk-keys",
         "documentation/concepts/workspace",
+        "documentation/concepts/scopes",
+        "documentation/concepts/sdk-keys",
         "documentation/concepts/api-keys"
+      ]
+    },
+    {
+      "group": "Features",
+      "pages": [
+        "documentation/features/rate-limit",
+        "documentation/features/usage-limit"
       ]
     },
     {
@@ -63,7 +71,8 @@
           "pages": [
             "api-reference/endpoints/retrieve-a-workspace",
             "api-reference/endpoints/create-a-workspace",
-            "api-reference/endpoints/retrieve-a-workspace-1"
+            "api-reference/endpoints/retrieve-a-workspace-1",
+            "api-reference/endpoints/updates-a-workspace"
           ]
         },
         {
@@ -81,7 +90,16 @@
             "api-reference/endpoints/retrieve-an-api-key-by-id",
             "api-reference/endpoints/verify-a-key-for-a-given-workspace",
             "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
-            "api-reference/endpoints/deletes-a-key-for-a-given-workspace"
+            "api-reference/endpoints/deletes-a-key-for-a-given-workspace",
+            "api-reference/endpoints/edit-an-api-key",
+            "api-reference/endpoints/refill-a-key-for-a-given-workspace"
+          ]
+        },
+        {
+          "group": "Link Token",
+          "pages": [
+            "api-reference/endpoints/generate-a-link-token",
+            "api-reference/endpoints/validate-a-link-token"
           ]
         }
       ]
