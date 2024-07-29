@@ -38,10 +38,7 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "documentation/introduction", 
-        "documentation/quickstart"
-      ]
+      "pages": ["documentation/introduction", "documentation/quickstart"]
     },
     {
       "group": "Concepts",
@@ -116,7 +113,8 @@
       "group": "Starter Kit",
       "pages": [
         "sdk/starter-kits/express",
-        "sdk/starter-kits/fastapi"
+        "sdk/starter-kits/fastapi",
+        "sdk/nextjs"
       ]
     }
   ],

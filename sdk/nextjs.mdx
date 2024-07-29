@@ -1,0 +1,118 @@
+---
+title: "NextJS"
+description: "Learn more about using Oneloop in your NextJS App"
+---
+
+This guide will help you get started installing and initializing Oneloop in your NextJS App.
+
+## Install for a new project
+
+The easiest way to get started is to use the <a href="https://github.com/oneloop-starter-kits/oneloop-nextjs-app-router-starter-kit">NextJS starter kit</a>.
+
+## Install for an existing project
+
+To install the Oneloop SDK in an existing NextJS project, run the following command:
+
+```bash npm
+npm install @oneloop-hq/frontend-react-sdk
+```
+
+## Setup your environment
+
+To initialize the SDK, you need to pass in your Production Access API key as a header. Add it to your `.env.local` file
+
+<Warning>
+
+Make sure to keep your API key secure and never expose it in your frontend
+code. To learn more about environment variables in NextJS, check out the
+
+  <a href="https://nextjs.org/docs/basic-features/environment-variables">
+    NextJS documentation
+  </a>
+</Warning>
+
+```bash .env.local
+ONELOOP_CLIENT_TOKEN=<your_oneloop_api_key>
+```
+
+## Get the `link_token`
+
+To initialize the SDK, you need to make a request to the Oneloop API to get the `link_token`.
+If you are using NextJS, you can make this request in your server-side code.
+
+The following example shows how to make this request in a NextJS API route.
+
+```typescript action.ts
+"use server";
+
+export async function getOneloopLinkToken(
+  workspaceId: string,
+  customerId: string
+) {
+  const res = await fetch("https://prod.oneloop.ai/api/v1/link-token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.ONELOOP_CLIENT_TOKEN}`,
+    },
+    body: JSON.stringify({
+      customerId,
+      workspaceId,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+```
+
+## Initialize the SDK
+
+To initialize the SDK, you need to pass the `link_token` you received from the Oneloop API using the above created function.
+Make sure to pass in the `workspaceId` and `customerId` you used to get the `link_token`.
+
+<Info>
+  The Oneloop API Key Manager component needs to be imported in a client-side
+  file.
+</Info>
+
+```typescript api-manager.tsx
+"use client";
+
+import { OneloopApiKeyManager } from "@oneloop-hq/frontend-react-sdk";
+import { useEffect, useState } from "react";
+import { getOneloopLinkToken } from "@/app/actions";
+
+const WORKSPACE_ID = "<your-oneloop-workspace-id>";
+const CURRENT_CUSTOMER_ID = "<your-customer-id>";
+
+export default function Page() {
+  const [linkToken, setLinkToken] = useState<string>("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getData(WORKSPACE_ID, CURRENT_CUSTOMER_ID);
+      setLinkToken(res.token);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      {linkToken && (
+        <OneloopApiKeyManager
+          accentColor="#ADFF85"
+          description="Create a key that unlocks full API access, enabling extensive interaction with your account. Learn more"
+          textColor="#000000"
+          title="Standard keys"
+          token={linkToken}
+          darkMode={false}
+        />
+      )}
+    </div>
+  );
+}
+```
