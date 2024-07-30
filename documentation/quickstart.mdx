@@ -30,7 +30,7 @@ If you find yourself spending time setting up API Keys for your customers, then 
             bearerAuth: {
               tokenProvider: {
                 getToken: async () => {
-                  return "Bearer " + process.env.ONELOOP_KEY;
+                  return process.env.ONELOOP_KEY;
                 },
               },
             },

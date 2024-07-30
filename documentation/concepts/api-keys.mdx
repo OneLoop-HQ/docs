@@ -16,7 +16,7 @@ With our SDKs and embeddable frontend components, you can surface API Key functi
                 bearerAuth: {
                     tokenProvider: {
                         getToken: async () => {
-                            return "Bearer " + process.env.ONELOOP_KEY;
+                            return process.env.ONELOOP_KEY;
                         },
                     },
                 },

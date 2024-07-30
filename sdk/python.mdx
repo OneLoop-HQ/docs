@@ -3,10 +3,72 @@ title: "Python"
 description: "Learn more about using Oneloop Python SDK"
 ---
 
+[Link to PYPI package](https://pypi.org/project/oneloop-python/)
+
 ## Installation
 
 ``` bash bash
 pip3 install oneloop-python
 ```
 
-[Link to PYPI package](https://pypi.org/project/oneloop-python/)
+## Authentication
+
+```python
+# Initialize the SDK client
+configuration = Configuration(
+    host="https://prod.oneloop.ai",
+    # SDK Key that was generated on the dashboard
+    # Ensure that this SDK key has the necessary permissions
+    access_token=os.environ.get("ONELOOP_API_KEY") 
+)
+
+oneloop_client = DefaultApi(ApiClient(configuration))
+```
+
+## Sample Usage
+
+```python
+@app.get("/api-key")
+async def generate_api_key():
+    api_key: CreateApiKeyResponse = oneloop_client.create_api_key()
+    api_key: CreateApiKeyResponseApiKey = api_key.key
+    # Actual API key
+    key: str = api_key.key
+    print (api_key)
+```
+
+## Verify API Keys
+
+When your user calls your endpoints and you need to verify their API Key then you use the following:
+
+```python
+from oneloop_client.models import VerifyApiKeyRequest, VerifyApiKeyResponse
+
+# Create the verify request
+verify_request = VerifyApiKeyRequest(
+    key="<API_KEY>", # The Api Key that was generated for the user (either through the SDK or dashboard)
+    requested_scopes=[
+        {
+            "id": "balance_transfer", # The requested scope
+            "representation": "balance_transfer",
+            "read": False,
+            "create": True, # Allow creation
+            "update": False,
+            "del": False
+        }
+    ]
+)
+
+# Verify the API key
+verify_response: VerifyApiKeyResponse = None
+try:
+    verify_response = oneloop_client.verify_api_key(verify_request)
+except Exception as e:
+    error: ErrorResponse = json.loads(e.body)
+    code = error['error']['code']
+    message = error['error']['message']
+    raise HTTPException(status_code=code, detail=message)            
+
+if verify_response and verify_response.status != "VALID":
+    raise HTTPException(status_code=401, detail=verify_response.status)
+```

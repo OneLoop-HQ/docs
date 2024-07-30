@@ -33,7 +33,7 @@ The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
                 bearerAuth: {
                     tokenProvider: {
                         getToken: async () => {
-                            return "Bearer " + process.env.ONELOOP_KEY;
+                            return process.env.ONELOOP_KEY;
                         },
                     },
                 },

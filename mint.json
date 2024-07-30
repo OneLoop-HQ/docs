@@ -114,7 +114,7 @@
       "pages": [
         "sdk/starter-kits/express",
         "sdk/starter-kits/fastapi",
-        "sdk/nextjs"
+        "sdk/starter-kits/nextjs"
       ]
     }
   ],

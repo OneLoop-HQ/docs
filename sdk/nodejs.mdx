@@ -3,11 +3,62 @@ title: "NodeJs"
 description: "Learn more about using Oneloop NodeJs SDK"
 ---
 
+[Link to NPM package](https://www.npmjs.com/package/@oneloop-hq/oneloop-ts)
+
 ## Installation
 
 ``` bash bash
 npm i @oneloop-hq/oneloop-ts
 ```
 
-[Link to NPM package](https://www.npmjs.com/package/@oneloop-hq/oneloop-ts)
+## Authentication
 
+```typescript
+import * as oneloop from "@oneloop-hq/oneloop-ts";
+
+const oneloopClient = new oneloop.DefaultApi(
+    oneloop.createConfiguration({
+        authMethods: {
+            bearerAuth: {
+                tokenProvider: {
+                    getToken: async () => {
+                        return process.env.ONELOOP_KEY;
+                    },
+                },
+            },
+        },
+    })
+);
+```
+
+## Sample Usage
+
+```typescript
+app.get("/workspace", async (req: Request, res: Response) => {
+  const result: RetrieveWorkspaceResponse = await oneloopClient.getWorkspace();
+  res.json(result);
+});
+```
+
+## Verify API Keys
+
+When your user calls your endpoints and you need to verify their API Key then you use the following:
+
+```typescript
+const verifyKeyRequest = {
+    key: "CUSTOMER_API_KEY", // This is the API key that you generated prior
+    requestedScopes: [{
+        id: "secure_endpoint",
+        representation: "secure_endpoint",
+        read: false,
+        create: true,
+        update: false,
+        del: false
+    }],
+}
+
+const result: VerifyApiKeyResponse = await oneloopClient.verifyApiKey(verifyKeyRequest)
+if (result.status === 'VALID') {
+    // Create something
+}
+```
