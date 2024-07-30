@@ -1,3 +1,67 @@
 ---
 title: "Express"
 ---
+
+<Icon icon="github" iconType="solid" color="#000000" /> [Github](https://github.com/oneloop-starter-kits/oneloop-node-express-ts-starter-kit)
+
+The express starter kit leverages the Oneloop nodejs SDK, but provides a helpful middleware that can be used for verifying API keys.
+
+You can fork the starter kit repo, or copy the middleware from it.
+
+## Middleware
+
+```typescript
+export const oneloopMiddleware = (
+  scopes: {
+    id: string;
+    read?: boolean;
+    create?: boolean;
+    update?: boolean;
+    del?: boolean;
+  }[]
+) => {
+  return async (req: Request, res: Response, next: () => any) => {
+    const key = req.headers.authorization?.replace("Bearer ", "") ? "":
+    if (!key) {
+        return res.status(401).send("Unauthorized)
+    }
+
+    const verifyApiKeyResponse = await oneloopClient.verifyApiKey({
+      key,
+      requestedScopes: scopes.map((scope) => {
+        return {
+          id: scope.id,
+          representation: scope.id,
+          read: scope.read ?? false,
+          create: scope.create ?? false,
+          update: scope.update ?? false,
+          del: scope.del ?? false,
+        };
+      }),
+    });
+
+    if (verifyApiKeyResponse.status === "VALID") {
+      next();
+    } else {
+      res.status(401).send("Unauthorized");
+    }
+  };
+};
+
+# Middleware that ensure an API key has the required scopes and is valid.
+const createPostMiddleware = oneloopMiddleware(
+    [{ 
+        id: "post", 
+        representation: "id",
+        create: true, 
+        read: false, 
+        update: false, 
+        delete: false 
+    }]
+)
+
+# Install the middleware on the express app
+app.post('/post', createPostMiddleware, handler);
+```
+
+To see how the `oneloopClient` is created checkout our NodeJs language reference.

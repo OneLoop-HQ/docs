@@ -40,6 +40,9 @@ The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
             },
         })
     );
+
+    const result: RetrieveWorkspaceResponse = await oneloopClient.getWorkspace();
+    console.log(result);
     ```
 
     ```python python
@@ -50,6 +53,9 @@ The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
         access_token=os.environ.get("ONELOOP_API_KEY")
     )
 
-    api_client = DefaultApi(ApiClient(configuration))
+    oneloop_client = DefaultApi(ApiClient(configuration))
+    
+    workspaces: RetrieveWorkspaceResponse = oneloop_client.get_workspace()
+    print (workspaces)
     ```
 </CodeGroup>

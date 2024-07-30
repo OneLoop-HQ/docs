@@ -1,3 +1,61 @@
 ---
 title: "FastApi"
 ---
+
+<Icon icon="github" iconType="solid" color="#000000" /> [Github](https://github.com/oneloop-starter-kits/oneloop-python-fastapi-starter-kit)
+
+The FastApi starter kit leverages the `oneloop-python` SDK under the hood, but provides a helpful middleware that can be used for verifying API keys.
+
+You can fork the starter kit repo, or copy the middleware from it.
+
+## Middleware
+
+```python
+def oneloop_middleware(scopes):
+    async def middleware(request: Request):
+        # Extract the authorization header
+        auth_header = request.headers.get("authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Customer API key is missing")
+
+        # Create the verify request
+        verify_request = VerifyApiKeyRequest(
+            key=auth_header.replace("Bearer ", ""),
+            requested_scopes=[
+                {
+                    "id": scope["id"],
+                    "representation": scope["id"],
+                    "read": scope.get("read", False),
+                    "create": scope.get("create", False),
+                    "update": scope.get("update", False),
+                    "del": scope.get("del", False),
+                }
+                for scope in scopes
+            ]
+        )
+
+        # Verify the API key
+        verify_response: VerifyApiKeyResponse = None
+        try:
+            verify_response = api_client.verify_api_key(verify_request)
+        except Exception as e:
+            error: ErrorResponse = json.loads(e.body)
+            code = error['error']['code']
+            message = error['error']['message']
+            raise HTTPException(status_code=code, detail=message)            
+        
+        if verify_response and verify_response.status != "VALID":
+            raise HTTPException(status_code=401, detail=verify_response.status)
+        
+    return middleware
+
+# Define the middleware with the required scopes
+balance_transfers_middleware = oneloop_middleware([{"id": "balance_transfers", "read": True, "create": False}])
+
+# Define your routes
+@app.get("/", dependencies=[Depends(balance_transfers_middleware)])
+async def read_root():
+    return {"Hello": "World"}
+```
+
+To see how the api client is instantiated, checkout the python language reference.
