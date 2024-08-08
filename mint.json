@@ -61,44 +61,38 @@
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Endpoints",
+      "group": "Workspace",
       "pages": [
-        {
-          "group": "Workspace",
-          "pages": [
-            "api-reference/endpoints/retrieve-a-workspace",
-            "api-reference/endpoints/create-a-workspace",
-            "api-reference/endpoints/retrieve-a-workspace-1",
-            "api-reference/endpoints/updates-a-workspace"
-          ]
-        },
-        {
-          "group": "Scopes",
-          "pages": [
-            "api-reference/endpoints/retrieve-workspace-scopes",
-            "api-reference/endpoints/create-a-workspace-scope"
-          ]
-        },
-        {
-          "group": "Api Keys",
-          "pages": [
-            "api-reference/endpoints/create-an-api-key",
-            "api-reference/endpoints/retrieve-api-keys-for-a-workspace",
-            "api-reference/endpoints/retrieve-an-api-key-by-id",
-            "api-reference/endpoints/verify-a-key-for-a-given-workspace",
-            "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
-            "api-reference/endpoints/deletes-a-key-for-a-given-workspace",
-            "api-reference/endpoints/edit-an-api-key",
-            "api-reference/endpoints/refill-a-key-for-a-given-workspace"
-          ]
-        },
-        {
-          "group": "Link Token",
-          "pages": [
-            "api-reference/endpoints/generate-a-link-token",
-            "api-reference/endpoints/validate-a-link-token"
-          ]
-        }
+        "api-reference/endpoints/retrieve-a-workspace",
+        "api-reference/endpoints/create-a-workspace",
+        "api-reference/endpoints/updates-a-workspace"
+      ]
+    },
+    {
+      "group": "Scopes",
+      "pages": [
+        "api-reference/endpoints/retrieve-workspace-scopes",
+        "api-reference/endpoints/create-a-workspace-scope"
+      ]
+    },
+    {
+      "group": "Api Keys",
+      "pages": [
+        "api-reference/endpoints/create-an-api-key",
+        "api-reference/endpoints/retrieve-api-keys-for-a-workspace",
+        "api-reference/endpoints/retrieve-an-api-key-by-id",
+        "api-reference/endpoints/verify-a-key-for-a-given-workspace",
+        "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
+        "api-reference/endpoints/deletes-a-key-for-a-given-workspace",
+        "api-reference/endpoints/edit-an-api-key",
+        "api-reference/endpoints/refill-a-key-for-a-given-workspace"
+      ]
+    },
+    {
+      "group": "Link Token",
+      "pages": [
+        "api-reference/endpoints/generate-a-link-token",
+        "api-reference/endpoints/validate-a-link-token"
       ]
     },
     {
@@ -107,7 +101,7 @@
     },
     {
       "group": "Languages",
-      "pages": ["sdk/nodejs", "sdk/python", "sdk/react"]
+      "pages": ["sdk/nodejs", "sdk/python", "sdk/react", "sdk/nextjs"]
     },
     {
       "group": "Starter Kit",

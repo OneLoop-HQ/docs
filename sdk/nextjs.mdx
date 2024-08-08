@@ -1,0 +1,109 @@
+---
+title: "NextJS"
+description: "Learn more about using Oneloop NextJS SDK"
+---
+
+<Note>
+  This SDK is for adding authentication to your NextJS routes. If you would like
+  to add our embeddable frontend UI to your NextJS app, please refer to the
+  [Oneloop UI SDK](/sdk/starter-kits/nextjs).
+</Note>
+
+Our NextJS SDK is a simple way to add authentication to your NextJS routes. We have also written an in-depth blog on how to add API Keys to your NextJS routes using Oneloop. You can read it [here](https://www.oneloop.ai/blog/how-to-add-api-keys-to-nextjs-routes).
+
+## Installation
+
+```bash bash
+npm i @oneloop-hq/nextjs@latest
+```
+
+## Adding Authentication
+
+Adding Oneloop auth to your NextJS routes is as simple as adding the `useOneloop` higher order function to your route handler.
+This function takes in two arguments: the route handler and an object with the `sdkKey` property set to your Oneloop SDK key.
+
+This function will automatically verify the user's API key and return a 401 if the key is invalid. To override this behavior, you can pass in a custom error handlers as the third argument as shown here
+
+<Warning>
+  Please make sure **not to expose your Oneloop SDK key** in your frontend code.
+  Always add your SDK key to your server components or environment variables.
+</Warning>
+
+```typescript api/profile/route.ts
+"use server";
+import { withOneloop } from "@oneloop-hq/nextjs";
+
+export const GET = useOneloop(
+  async (request: Request) => {
+    return new Response("Profile Endpoint Authenticated");
+  },
+  { sdkKey: "<YOUR_ONELOOP_SDK_KEY>" }
+);
+```
+
+## Validating with scopes
+
+At Oneloop, we call RBAC / Permissions as Scopes. You can easily add scopes to your route by passing in the `scopes` property to the `useOneloop` function.
+
+Scopes takes in an array of objects with the `representation` and optional `read`, `create`, `update`, and `del` properties.
+
+So to check if the key has _read_ and _create_ access attached to _profile_ scope, we can modify our code as below
+
+```typescript api/profile/route.ts
+export const GET = useOneloop(
+  async (request: Request) => {
+    return new Response("Profile Endpoint Authenticated");
+  },
+  {
+    sdkKey: "<YOUR_ONELOOP_SDK_KEY>",
+    scopes: [
+      {
+        representation: "profile",
+        read: true,
+        create: true,
+      },
+    ],
+  }
+);
+```
+
+## Handling Errors
+
+You can also pass in a custom handlers as the third argument to the `useOneloop` function for handling errors and invalid keys.
+There are 2 types of handlers you can pass in: `onError` and `onInvalidKey`.
+
+### `onInvalidKey()`
+
+This function will be called if the user's API key is invalid, rate limited, reached usage limit, or does not have the required scopes
+
+```typescript api/profile/route.ts
+export const GET = useOneloop(
+  async (request: Request) => {
+    return new Response("Profile Endpoint Authenticated");
+  },
+  { sdkKey: "<YOUR_ONELOOP_SDK_KEY>" },
+  {
+    onInvalidKey: async (request, error) => {
+      return new Response("Invalid Key: " + err.message, { status: err.code });
+    },
+  }
+);
+```
+
+### `onError()`
+
+This function will be called if there is an error while verifying the user's API key. Possible scenario can be if you passed in the wrong Oneloop SDK Key
+
+```typescript api/profile/route.ts
+export const GET = useOneloop(
+  async (request: Request) => {
+    return new Response("Profile Endpoint Authenticated");
+  },
+  { sdkKey: "<YOUR_ONELOOP_SDK_KEY>" },
+  {
+    onError: async (request, error) => {
+      return new Response("Error while verifying API key", { status: 500 });
+    },
+  }
+);
+```
