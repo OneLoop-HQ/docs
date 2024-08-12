@@ -38,7 +38,11 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["documentation/introduction", "documentation/quickstart"]
+      "pages": [
+        "documentation/introduction",
+        "documentation/quickstart",
+        "documentation/migration"
+      ]
     },
     {
       "group": "Concepts",

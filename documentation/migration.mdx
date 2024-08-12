@@ -1,0 +1,93 @@
+---
+title: Migration
+description: "Learn more about migrating your existing API auth to Oneloop"
+---
+
+Oneloop provides a simple way to manage your API keys and permissions. This guide will help you migrate your existing API key management to Oneloop.
+
+We have a special private endpoint that we will provide you with that will allow you to create API keys and manage permissions. This endpoint will be available to you once you have signed up for Oneloop and requested access to migration services.
+
+You can also initiate a migration service with us by reaching out to us at [support@oneloop.ai](mailto:support@oneloop.ai) for more information.
+
+## Migration Steps
+
+Here is the general process for migrating your existing API key management to Oneloop:
+
+<Accordion title="Gather all your user API Keys">
+  If you have been storing your user API keys in your database, you will need to
+  gather all of them. You can use this information to create API keys in
+  Oneloop.
+</Accordion>
+
+<Accordion title="Gather user permissions">
+  You will also need to gather all the permissions that you have assigned to
+  each user. This information will be used to create scopes in Oneloop.
+</Accordion>
+
+<Accordion title="Create Scopes in Oneloop">
+  From the user permissions that you have gathered, you can create scopes in
+  Oneloop. Scopes are a way to group permissions together. For example, you can
+  create a scope called `profile`. That way when you create an API key for a
+  user, you can assign the `profile` scope along with access like `read`,
+  `create`, `update`, and `delete`.
+</Accordion>
+
+<Accordion title="Create API Keys in Oneloop">
+ <Info>
+  We have purposely decided not to expose our migration endpoint to the public and share it's structure. 
+  This is to ensure that only trusted parties can access this endpoint and migrate their api keys securely.
+  </Info>
+  
+  You call our private migration endpoint and give the api key as a part of the json body. This
+  endpoint access will be given to a particular IP address so that only your
+  server can access this for a given time window. We will work with you setting
+  this up. Once we get the api keys, we will encrypt these api keys using one-way hashing and
+  store it in our database. This way we never store the actual api keys in our
+  database and your user api keys are secure.
+
+</Accordion>
+
+<Accordion title="Update your backend code">
+  You will need to update your API functions to use Oneloop SDKs. We have
+  several native SDKs available to help you get started with this process. You
+  can find more information on our SDKs [here](/sdk/introduction).
+
+Here is a general example of how you can use the Oneloop SDK in your backend
+code:
+
+```typescript
+import * as oneloop from "@oneloop-hq/oneloop-ts";
+
+const oneloopClient = new oneloop.DefaultApi(
+  oneloop.createConfiguration({
+    authMethods: {
+      bearerAuth: {
+        tokenProvider: {
+          getToken: async () => {
+            return process.env.ONELOOP_KEY;
+          },
+        },
+      },
+    },
+  })
+);
+
+export async function getProfile(req, res) {
+  const result: VerifyApiKeyResponse = await oneloopClient.verifyApiKey(
+    req.headers.authorization
+  );
+  if (result.status === "VALID") {
+    res.json({ profile: "Profile Data" });
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+}
+```
+
+</Accordion>
+
+<Accordion title="[Optional] Add our frontend SDK">
+  If you would like to add our embeddable frontend UI to your app, you can use
+  our frontend SDK. You can find more information on our frontend SDKs
+  [here](/sdk/react).
+</Accordion>
