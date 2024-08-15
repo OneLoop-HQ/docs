@@ -8,14 +8,46 @@ The FastApi starter kit leverages the `oneloop-python` SDK under the hood, but p
 
 You can fork the starter kit repo, or copy the middleware from it.
 
-## Middleware
+<Info>
+  If you haven't already, [create an account](https://dashboard.oneloop.ai) with
+  Oneloop. Here is the link to our [QuickStart Guide](/documentation/quickstart)
+  to help you get started.
+</Info>
 
-```python
-def oneloop_middleware(scopes):
+## Installation
+
+```bash
+pip install typing fastapi oneloop-python
+```
+
+<Info>
+  To learn more about the this SDK, you can visit the [Python SDK
+  documentation](/sdk/python).
+</Info>
+
+## Usage
+
+### Middleware
+
+Let's first add the middleware that will be used to verify the API key. This will save you from having to write the same code in every route.
+
+```python middleware.py
+from typing import List, TypedDict, Optional
+from fastapi import Request, HTTPException
+import json
+
+class ScopeObject(TypedDict):
+    id: str
+    create: Optional[bool]
+    read: Optional[bool]
+    update: Optional[bool]
+    delete: Optional[bool]
+
+def oneloop_middleware(scopes: List[ScopeObject] = []):
     async def middleware(request: Request):
         # Extract the authorization header
         auth_header = request.headers.get("authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
+        if not auth_header:
             raise HTTPException(status_code=401, detail="Customer API key is missing")
 
         # Create the verify request
@@ -28,34 +60,52 @@ def oneloop_middleware(scopes):
                     "read": scope.get("read", False),
                     "create": scope.get("create", False),
                     "update": scope.get("update", False),
-                    "del": scope.get("del", False),
+                    "delete": scope.get("delete", False),
                 }
                 for scope in scopes
             ]
         )
 
-        # Verify the API key
-        verify_response: VerifyApiKeyResponse = None
         try:
-            verify_response = api_client.verify_api_key(verify_request)
+            # Verify the API key
+            verify_response: VerifyApiKeyResponse = api_client.verify_api_key(verify_request)
+
+            if verify_response.status != "VALID":
+              raise HTTPException(status_code=401, detail=verify_response.status)
+
         except Exception as e:
-            error: ErrorResponse = json.loads(e.body)
+            error = json.loads(e.body)
             code = error['error']['code']
             message = error['error']['message']
-            raise HTTPException(status_code=code, detail=message)            
-        
-        if verify_response and verify_response.status != "VALID":
-            raise HTTPException(status_code=401, detail=verify_response.status)
-        
+            raise HTTPException(status_code=code, detail=message)
+
+
+
     return middleware
 
-# Define the middleware with the required scopes
-balance_transfers_middleware = oneloop_middleware([{"id": "balance_transfers", "read": True, "create": False}])
+```
 
+### Authenticate the API key
+
+Now, let's use the middleware in a FastApi route and authenticate the API key.
+
+```python routes.py
 # Define your routes
-@app.get("/", dependencies=[Depends(balance_transfers_middleware)])
+@app.get("/", dependencies=[Depends(oneloop_middleware())])
 async def read_root():
     return {"Hello": "World"}
 ```
 
-To see how the api client is instantiated, checkout the python language reference.
+### Checking for permissions
+
+You can also check for permissions in your routes. Let's say you have a route that requires a specific read access for profile data.
+You want to check if the API key has the required scope before returning the data. You can pass that scope to the middleware.
+
+Let's modify the above route to check for `profile` read access.
+
+```python routes.py
+# Define your routes and check for permissions
+@app.get("/", dependencies=[Depends(oneloop_middleware([{"id": "profile", "read": True}]))])
+async def read_root():
+    return {"Hello": "World"}
+```

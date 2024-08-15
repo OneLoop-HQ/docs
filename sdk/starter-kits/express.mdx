@@ -8,9 +8,24 @@ The express starter kit leverages the Oneloop nodejs SDK, but provides a helpful
 
 You can fork the starter kit repo, or copy the middleware from it.
 
-## Middleware
+## Installation
 
-```typescript
+```bash
+npm install @oneloop-hq/oneloop-ts
+```
+
+<Info>
+  To learn more about the this SDK, you can visit the [NodeJS SDK
+  documentation](/sdk/nodejs).
+</Info>
+
+## Usage
+
+### Middleware
+
+Let's first add the middleware that will be used to verify the API key. This will save you from having to write the same code in every route.
+
+```typescript middleware.ts
 export const oneloopMiddleware = (
   scopes: {
     id: string;
@@ -23,7 +38,7 @@ export const oneloopMiddleware = (
   return async (req: Request, res: Response, next: () => any) => {
     const key = req.headers.authorization?.replace("Bearer ", "") ? "":
     if (!key) {
-        return res.status(401).send("Unauthorized)
+        return res.status(401).send("Unauthorized")
     }
 
     const verifyApiKeyResponse = await oneloopClient.verifyApiKey({
@@ -48,20 +63,28 @@ export const oneloopMiddleware = (
   };
 };
 
-# Middleware that ensure an API key has the required scopes and is valid.
-const createPostMiddleware = oneloopMiddleware(
-    [{ 
-        id: "post", 
-        representation: "id",
-        create: true, 
-        read: false, 
-        update: false, 
-        delete: false 
-    }]
-)
-
-# Install the middleware on the express app
-app.post('/post', createPostMiddleware, handler);
 ```
 
-To see how the `oneloopClient` is created checkout our NodeJs language reference.
+### Authenticate the API key
+
+Now, let's use the middleware in a FastApi route and authenticate the API key.
+
+```typescript
+// Install the middleware on the express app
+app.post("/profile", oneloopMiddleware(), handler);
+```
+
+### Checking for permissions
+
+You can also check for permissions in your routes. Let's say you have a route that requires a specific read access for profile data.
+You want to check if the API key has the required scope before returning the data. You can pass that scope to the middleware.
+
+Let's modify the above route to check for `profile` read access.
+
+```typescript
+app.post(
+  "/profile",
+  oneloopMiddleware([{ id: "profile", read: true }]),
+  handler
+);
+```
