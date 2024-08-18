@@ -2,17 +2,38 @@
 title: API Keys
 ---
 
-API Keys are issued under a Workspace. They are meant for your customers. 
+API Keys are issued under a Workspace. They are meant for your customers.
 
 With our SDKs and embeddable frontend components, you can surface API Key functionality to your customers.
 
-You can create keys in three ways.
+<Info>
+  API Keys are issued under a Workspace and for a specific Customer. Customers
+  are referenced by their Customer ID. This is a unique identifier for your
+  customer. You can use any distinct identifier in your system for
+  `customer-id`.
+</Info>
 
-### Dashboard
+## Create an API Key
+
+There are many ways to create an API Key.
+
+### Embeddable Frontend Components
+
+Using our React component you can surface the functionality of creating, rotation, editing, deleting keys directly to your users.
+
+Check out our [React SDK](https://www.npmjs.com/package/@oneloop-hq/frontend-react-sdk) to get started.
 
 <img src="/images/ak.png" />
 
+### Dashboard
+
+You can create an API Key directly from [Oneloop dashboard](https://dashboard.oneloop.ai).
+
+<Info>Remember to share the API Key with your customers in a secure way.</Info>
+
 ### Backend SDKs
+
+You can use our SDKs to create API Keys programmatically.
 
 <CodeGroup>
     ```typescript typescript
@@ -71,7 +92,7 @@ You can create keys in three ways.
         customer_id="customer_id", # The customer to associate the API key with
         # The scopes that the API key should have
         # Note that the representation is created when you create scopes inside the workspace
-        scopes=[ 
+        scopes=[
             CreateApiKeyRequestScopesInner(
                 representation="balance_transfers",
                 read=True,
@@ -85,51 +106,5 @@ You can create keys in three ways.
 
     api_key: CreateApiKeyResponse = oneloop_client.create_api_key(request)
     ```
+
 </CodeGroup>
-
-### Embeddable Frontend Components
-
-Using our React component you can surface the functionality of creating, rotation, editing, deleting keys directly to your users.
-
-Check out the React language reference for detailed information
-
-<Steps>
-    <Step title="Create Link Token">
-        When you use our components, then you need to generate a link token from your SDK Key. This is necessary to ensure that you authorized the display of the component and any changes that the component will perform such as creating, editing, deleting keys
-    </Step>
-    
-    <Step title="Install React SDK">
-        ```bash
-        $ npm install @oneloop-hq/frontend-react-sdk
-        ```
-    </Step>
-
-    <Step title="Instantiate the React Component">
-        ```typescript ApiSettingsPage.tsx
-        import { OneloopApiKeyManager } from "@oneloop-hq/frontend-react-sdk";
-        import { useState } from "react";
-
-        const WORKSPACE_ID = "<your-oneloop-workspace-id>";
-        const CURRENT_CUSTOMER_ID = "<your-customer-id>";
-
-        export default function ApiSettingsPage() {
-            const [linkToken, setLinkToken] = useState<string>("ADD_GENERATED_LINK_TOKEN");
-
-            return (
-                <div>
-                {linkToken &&
-                    <OneloopApiKeyManager
-                    accentColor="#ADFF85"
-                    description="Create a key that unlocks full API access, enabling extensive interaction with your account. Learn more"
-                    textColor="#000000"
-                    title="Standard keys"
-                    token={linkToken}
-                    darkMode={false}
-                    />
-                }
-                </div>
-            );
-        }
-        ```
-    </Step>
-</Steps>

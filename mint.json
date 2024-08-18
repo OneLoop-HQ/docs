@@ -5,16 +5,18 @@
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
+  "layout": "sidenav",
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "primary": "#000000",
+    "light": "#ffffff",
+    "dark": "#000000",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#000000",
+      "to": "#7d96f2"
     }
   },
+  "theme": "quill",
   "topbarLinks": [
     {
       "name": "Support",
@@ -25,14 +27,17 @@
     "name": "Dashboard",
     "url": "https://dashboard.oneloop.ai"
   },
-  "tabs": [
+
+  "anchors": [
     {
       "name": "API Reference",
-      "url": "api-reference"
+      "url": "api-reference",
+      "icon": "code"
     },
     {
       "name": "SDK",
-      "url": "sdk"
+      "url": "sdk",
+      "icon": "cube"
     }
   ],
   "navigation": [
@@ -56,6 +61,8 @@
     {
       "group": "Features",
       "pages": [
+        "documentation/features/authentication",
+        "documentation/features/permissions",
         "documentation/features/rate-limit",
         "documentation/features/usage-limit"
       ]

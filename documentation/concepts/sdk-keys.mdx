@@ -2,29 +2,35 @@
 title: SDK Keys
 ---
 
-<Note>
+<Info>
   SDK Keys are keys that you use to integrate with our systems. They are not
   customer facing.
-</Note>
+</Info>
 
-<Note>SDK Keys are secrets. Do not expose them.</Note>
+<Warning>SDK Keys are secrets. Do not expose them.</Warning>
+
+SDK Keys are used to authenticate your application with our systems. SDK Keys are not customer facing and should be stored securely in your backend.
+
+The concept of workspace does not apply to SDK Keys. SDK Keys are global and can be used across all workspaces.
 
 ## Generating SDK Keys
 
-1. SDK Keys can only be generated using the [Dashboard](https://dashboard.oneloop.ai).
+SDK Keys can only be generated using the [Dashboard](https://dashboard.oneloop.ai).
 
 <img src="/images/create_root_key.png" />
 
-2. You can associate scopes with the SDK Key to ensure more security.
+## SDK Key Scopes
+
+You can associate scopes with the SDK Key to ensure more security.
 
 <img src="/images/create_root_key_scope.png" />
 
-## SDK Key Scopes
+### Definitions
 
 When you create a SDK Key you can configure the following scopes
 
 | Scope Name         | Description                   |
-| ---                | ---                           |
+| ------------------ | ----------------------------- |
 | `workspace`        | Access to workspace resources |
 | `workspace_scopes` | Access to workspace scopes    |
 | `api_keys`         | Access to API keys            |
@@ -37,8 +43,8 @@ For example, a SDK Key without the `api_keys` write scope, can not create API ke
 
 Following are some considerations:
 
-1. SDK Keys can only be generated using our Dashboard.
-2. You can assign different scopes to your SDK Keys for the right authorization level.
-3. You should store SDK keys securely in your backend.
-4. SDK Keys are not publishable keys, they are secret keys that must not be exposed to the public
-5. In the event of exposure, revoke them immediately in the dashboard.
+- [x] SDK Keys can only be generated using our Dashboard.
+- [x] You can assign different scopes to your SDK Keys for the right authorization level.
+- [x] You should store SDK keys securely in your backend.
+- [x] SDK Keys are not publishable keys, they are secret keys that must not be exposed to the public
+- [x] In the event of exposure, revoke them immediately in the dashboard.

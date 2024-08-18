@@ -1,0 +1,47 @@
+---
+title: Permissions
+---
+
+Permissions are a way to control access to your API. When starting out with a new project, you might not need permissions. But as your project grows, you might want to add permissions to your API to control who can access what.
+
+## Importance of API Key Permissions
+
+API key permissions are vital for several reasons:
+
+1. **Security**: They limit the potential damage if an API key is compromised.
+2. **Principle of Least Privilege**: Ensures that API keys have only the permissions necessary for their intended use.
+3. **Compliance**: Helps meet regulatory requirements by controlling data access.
+4. **Auditability**: Facilitates tracking and auditing of API usage.
+5. **Scalability**: Allows for managing access across large, complex systems.
+
+## Implementing API Key Permissions
+
+Oneloop provides a flexible and powerful permission system that allows you to define granular permissions for your API keys. Here's how you can implement API key permissions in Oneloop:
+
+1. Create a scope under a workspace for each set of permissions you want to define.
+2. Assign the scopes to your [Verify Request](/api-reference/endpoints/verify-a-key-for-a-given-workspace) endpoint.
+3. When creating an API key, assign the appropriate scopes to the key.
+
+## Best Practices
+
+1. **Granular Permissions**: Create fine-grained permissions for maximum flexibility.
+
+2. **Default to Deny**: Start with no permissions and add them as needed.
+
+3. **Regular Audits**: Periodically review and update permissions.
+
+4. **Monitoring**: Implement logging and alerting for permission-related events.
+
+5. **Expiration and Rotation**: Set expiration dates for API keys and rotate them regularly.
+
+6. **Documentation**: Clearly document available permissions and their implications.
+
+7. **User Interface**: Provide a user-friendly interface for managing permissions.
+
+8. **Versioning**: Consider versioning your permission structure to allow for future changes.
+
+## Conclusion
+
+Implementing a robust API key permission system is crucial for maintaining the security and integrity of your API. By carefully considering your resources, actions, and roles, and following best practices, you can create a flexible and secure system that grows with your API's needs.
+
+Remember, API key permissions are not a set-it-and-forget-it feature. They require ongoing management and refinement as your API evolves and your security needs change.

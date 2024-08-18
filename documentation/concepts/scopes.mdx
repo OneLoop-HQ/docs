@@ -2,23 +2,35 @@
 title: Scopes
 ---
 
-<Note>
-    You must specify an unique id when creating a scope. You can then reference this id when verifying API keys using the SDKs
-</Note>
+<Info>
+  You must specify an unique id when creating a scope. You can then reference
+  this id when verifying API keys using the SDKs
+</Info>
 
-## Adding Scopes to Workspace
+Scopes are a way to add permissions and rbac to your API. For example, you can create a scope called `profile`. That way when you create an API key for a user, you can assign the `profile` scope along with access like `read`, `create`, `update`, and `delete`.
 
-You can use the dashboard or SDK to create scopes. 
+## Creating a Scope
 
-When using the SDK you can create scopes and reference them in real time.
+There are two ways to create a scope.
+
+### Using the Dashboard
+
+You can create a scope in the dashboard
 
 <Frame>
-    <img src="/images/create_ws_scope.png" />
+  <img src="/images/create_ws_scope.png" />
 </Frame>
+
+### Using the API
+
+You can create a scope using the API or SDK. See how you can create a scope using the [Create Scope API](/api-reference/endpoints/create-a-scope):
+
+## Using Scopes
+
+You can easily add permissions to your API endpoints by adding scopes in [Verify Request](/api-reference/endpoints/verify-a-key-for-a-given-workspace) endpoint. This way, only the API keys with the required scopes will be considered `VALID` and can access your endpoint.
 
 ## Considerations
 
-- Scopes are associated with a Workspace.
-- Scopes are free-form, meaning you can create a scope name `panda` without any meaning
-- Scopes created on a workspace are then available to be added to an API key created under that workspace
-
+- [x] Scopes are associated with a Workspace.
+- [x] Scopes are free-form, meaning you can create a scope name `panda` without any meaning
+- [x] Scopes created on a workspace are then available to be added to an API key created under that workspace

@@ -1,26 +1,51 @@
 ---
-title: Quickstart
+title: Setup your OneLoop account
+sidebarTitle: Set up Oneloop
 description: "Let's get you up and running quickly."
 ---
 
-The goal of Oneloop is to simplify API Key mangement for your customers.
+Before you can start using Oneloop, you will need to create an account with Oneloop and set up a workspace in the Oneloop Dashboard.
 
-If you find yourself spending time setting up API Keys for your customers, then Oneloop is for you.
+<Info>
+  If you are looking to migrate your existing issued API Keys to Oneloop, please
+  refer to our [migration guide](/documentation/migration).
+</Info>
 
-<Steps>
-  <Step title="Create Workspace">
-    Create a workspace in the dashboard. For example, we've created a workspace 'Sandbox'
-    <Frame caption="Here we created a workspace 'Sandbox'">
-      <img src="/images/create_workspace.png" />
-    </Frame>
+<Steps titleSize="h3">
+<Step  title="Sign in">Sign in to your Oneloop account. If you don't have an account, you can [sign up](https://dashboard.oneloop.ai) for a free account</Step>
+
+  <Step title="Create a Oneloop Workspace">
+    Create a workspace in the dashboard. A workspace is a logical seperation for your API authentication. For example, you can have a workspace for your test environment and another for your production environment.
+
+    To learn more about workspaces, check out the [Workspace](/documentation/concepts/workspace) documentation.
+
   </Step>
-  <Step title="Create Root Key">
-    Create a SDK Key in the Dashboard.
-    <img src="/images/create_root_key.png" />
+  <Step title="Generate SDK Key">
+    Create a SDK Key in the Dashboard. This key will be used to authenticate your Oneloop SDKs. SDk Key are shared across multiple workspaces and used as bearer tokens. 
+    
+    To learn more about SDK Key, check out the [SDK Keys](/documentation/concepts/sdk-keys) documentation.
+    
   </Step>
-  <Step title="Use the SDK">
-    Use the SDK along with the SDK Key to generate, delete, verify api keys in realtime
+
+  <Step title="Generate API Key">
+    Create an API Key in the Dashboard. This key will be used to authenticate your API endpoints. API Keys are unique to a workspace.
+
+    To learn more about API Key, check out the [API Keys](/documentation/concepts/api-keys) documentation.
+
+  </Step>
+
+  <Step title="Add Oneloop to your code">
+
+    Use onf of our SDKs or APIs, along with the SDK Key to generate, delete, verify api keys in realtime
     <CodeGroup>
+
+```bash cURL
+curl -X POST 'https://prod.oneloop.ai/api/v1/api-key/verify' \
+-H 'Authorization: Bearer <SDK-Key>' \
+-H 'Content-Type: application/json' \
+--data '{ "key": "<API-Key>", "requestedScopes": [] }'
+```
+
       ```typescript typescript
       import * as oneloop from "@oneloop-hq/oneloop-ts";
 
@@ -30,14 +55,20 @@ If you find yourself spending time setting up API Keys for your customers, then 
             bearerAuth: {
               tokenProvider: {
                 getToken: async () => {
-                  return process.env.ONELOOP_KEY;
+                  return process.env.ONELOOP_SDK_KEY;
                 },
               },
             },
           },
         })
       );
+
+      oneloopClient.verifyApiKey({
+        key: "<API-Key>",
+        requestedScopes: [],
+      });
       ```
+
 
       ```python python
       from oneloop_client import DefaultApi, Configuration, ApiClient
@@ -48,9 +79,13 @@ If you find yourself spending time setting up API Keys for your customers, then 
       )
 
       api_client = DefaultApi(ApiClient(configuration))
+
+      api_client.verify_api_key(
+        key="<API-Key>",
+        requested_scopes=[]
+      )
       ```
     </CodeGroup>
+
   </Step>
 </Steps>
-
-For more information on SDK Keys and workspaces, check out Concepts tab
