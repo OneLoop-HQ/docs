@@ -47,21 +47,11 @@ curl -X POST 'https://prod.oneloop.ai/api/v1/api-key/verify' \
 ```
 
       ```typescript typescript
-      import * as oneloop from "@oneloop-hq/oneloop-ts";
+      import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
 
-      const oneloopClient = new oneloop.DefaultApi(
-        oneloop.createConfiguration({
-          authMethods: {
-            bearerAuth: {
-              tokenProvider: {
-                getToken: async () => {
-                  return process.env.ONELOOP_SDK_KEY;
-                },
-              },
-            },
-          },
-        })
-      );
+      const oneloopClient = new OneloopApiClient({
+        token: process.env.ONELOOP_SDK_KEY ?? "",
+      });
 
       oneloopClient.verifyApiKey({
         key: "<API-Key>",

@@ -1,11 +1,9 @@
 ---
-title: 'Introduction'
-description: 'Learn more about integrating Oneloop in your product'
+title: "Introduction"
+description: "Learn more about integrating Oneloop in your product"
 ---
 
-<Note>
-  If you need additional API endpoints then reach out to us.
-</Note>
+<Note>If you need additional API endpoints then reach out to us.</Note>
 
 ## Welcome
 
@@ -23,25 +21,19 @@ If you are using one of the SDKs, then you can set the authorization header base
 
 The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
 
+```typescript
+
+```
+
 <CodeGroup>
     ```typescript typescript
-    import * as oneloop from "@oneloop-hq/oneloop-ts";
+    import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
 
-    const oneloopClient = new oneloop.DefaultApi(
-        oneloop.createConfiguration({
-            authMethods: {
-                bearerAuth: {
-                    tokenProvider: {
-                        getToken: async () => {
-                            return process.env.ONELOOP_KEY;
-                        },
-                    },
-                },
-            },
-        })
-    );
+    const oneloopClient = new OneloopApiClient({
+      token: process.env.ONELOOP_KEY ?? "",
+    });
 
-    const result: RetrieveWorkspaceResponse = await oneloopClient.getWorkspace();
+    const result = await oneloopClient.getWorkspace();
     console.log(result);
     ```
 
@@ -54,8 +46,9 @@ The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
     )
 
     oneloop_client = DefaultApi(ApiClient(configuration))
-    
+
     workspaces: RetrieveWorkspaceResponse = oneloop_client.get_workspace()
     print (workspaces)
     ```
+
 </CodeGroup>

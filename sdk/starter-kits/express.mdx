@@ -26,6 +26,12 @@ npm install @oneloop-hq/oneloop-ts
 Let's first add the middleware that will be used to verify the API key. This will save you from having to write the same code in every route.
 
 ```typescript middleware.ts
+import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+
+const oneloopClient = new OneloopApiClient({
+  token: process.env.ONELOOP_KEY ?? "",
+});
+
 export const oneloopMiddleware = (
   scopes: {
     id: string;

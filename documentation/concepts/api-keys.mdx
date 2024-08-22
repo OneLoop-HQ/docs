@@ -37,21 +37,11 @@ You can use our SDKs to create API Keys programmatically.
 
 <CodeGroup>
     ```typescript typescript
-    import * as oneloop from "@oneloop-hq/oneloop-ts";
+    import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
 
-    const oneloopClient = new oneloop.DefaultApi(
-        oneloop.createConfiguration({
-            authMethods: {
-                bearerAuth: {
-                    tokenProvider: {
-                        getToken: async () => {
-                            return process.env.ONELOOP_KEY;
-                        },
-                    },
-                },
-            },
-        })
-    );
+    const oneloopClient = new OneloopApiClient({
+      token: process.env.ONELOOP_KEY ?? "",
+    });
 
     const createApiKeyResponse = await oneloopClient.createApiKey({
         name: "API Key",
