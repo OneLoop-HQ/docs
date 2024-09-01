@@ -38,12 +38,12 @@ const oneloop = createOneloop("<YOUR_ONELOOP_SDK_KEY>");
 
 export const GET = oneloop.auth(async (request: Request) => {
   return new Response("Profile Endpoint Authenticated");
-}, {});
+});
 ```
 
 ## Validating with scopes
 
-At Oneloop, we call RBAC / Permissions as Scopes. You can easily add scopes to your route by passing in the `scopes` property to the `useOneloop` function.
+At Oneloop, we call RBAC / Permissions as Scopes. You can easily add scopes to your route by passing in the `scopes` property to the `auth` function.
 
 Scopes takes in an array of objects with the `representation` and optional `read`, `create`, `update`, and `del` properties.
 
@@ -68,7 +68,7 @@ export const GET = oneloop.auth(
 
 ## Handling Errors
 
-You can also pass in a custom handlers as the third argument to the `useOneloop` function for handling errors and invalid keys.
+You can also pass in a custom handlers in econd argument to the `auth` function for handling errors and invalid keys.
 There are 2 types of handlers you can pass in: `onError` and `onInvalidKey`.
 
 ### `onInvalidKey()`
@@ -80,8 +80,14 @@ export const GET = oneloop.auth(
   async (request: Request) => {
     return new Response("Profile Endpoint Authenticated");
   },
-  {},
   {
+    scopes: [
+      {
+        representation: "profile",
+        read: true,
+        create: true,
+      },
+    ],
     onInvalidKey: async (request, error) => {
       return new Response("Invalid Key: " + err.message, { status: err.code });
     },
@@ -98,8 +104,14 @@ export const GET = oneloop.auth(
   async (request: Request) => {
     return new Response("Profile Endpoint Authenticated");
   },
-  {},
   {
+    scopes: [
+      {
+        representation: "profile",
+        read: true,
+        create: true,
+      },
+    ],
     onError: async (request, error) => {
       return new Response("Error while verifying API key", { status: 500 });
     },
