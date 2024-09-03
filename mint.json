@@ -96,7 +96,8 @@
         "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
         "api-reference/endpoints/deletes-a-key-for-a-given-workspace",
         "api-reference/endpoints/edit-an-api-key",
-        "api-reference/endpoints/refill-a-key-for-a-given-workspace"
+        "api-reference/endpoints/refill-a-key-for-a-given-workspace",
+        "api-reference/endpoints/retrieve-usage-for-a-key"
       ]
     },
     {

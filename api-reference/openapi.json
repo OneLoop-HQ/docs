@@ -217,7 +217,8 @@
           "customerId": { "type": "string", "nullable": true },
           "deleted": { "type": "boolean" },
           "createdAt": { "type": "string" },
-          "updatedAt": { "type": "string" }
+          "updatedAt": { "type": "string" },
+          "lastUsedAt": { "type": "string", "nullable": true }
         },
         "required": [
           "id",
@@ -232,7 +233,8 @@
           "customerId",
           "deleted",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "lastUsedAt"
         ]
       },
       "CreateApiKeyResponse": {
@@ -345,6 +347,23 @@
           "requestedScopes": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/ApiKeyScope" }
+          },
+          "route": { "type": "string" },
+          "billing": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "useCustomerIdForBilling": {
+                "type": "boolean",
+                "default": false
+              },
+              "usage": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": true
+              }
+            },
+            "required": ["usage"]
           },
           "rateLimitConfig": {
             "type": "object",
@@ -1239,7 +1258,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/api/v1/link-token/{token}": {
       "get": {
         "operationId": "validateLinkToken",
         "summary": "Validate a link token",
@@ -1275,6 +1296,72 @@
                     "workspaceId",
                     "customerId"
                   ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/usage/{bid}": {
+      "get": {
+        "operationId": "getBillingUsage",
+        "summary": "Retrieve billing usage information for a given billing id",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The billing id." },
+            "required": true,
+            "name": "bid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The billing usage information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "billingId": { "type": "string" },
+                          "day": { "type": "string" },
+                          "totalBillingUsage": { "type": "number" }
+                        },
+                        "required": ["billingId", "day", "totalBillingUsage"]
+                      }
+                    }
+                  },
+                  "required": ["data"]
                 }
               }
             }
