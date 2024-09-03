@@ -26,54 +26,81 @@ npm install @oneloop-hq/oneloop-ts
 Let's first add the middleware that will be used to verify the API key. This will save you from having to write the same code in every route.
 
 ```typescript middleware.ts
-import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+import { OneloopClient } from "@oneloop-hq/oneloop-ts";
+import dotenv from "dotenv";
+import { Request, Response } from "express";
 
-const oneloopClient = new OneloopApiClient({
+dotenv.config();
+
+const oneloopClient = new OneloopClient({
   token: process.env.ONELOOP_KEY ?? "",
 });
 
-export const oneloopMiddleware = (
-  scopes: {
+export const oneloopMiddleware = (config?: {
+  scopes?: {
     id: string;
     read?: boolean;
     create?: boolean;
     update?: boolean;
     del?: boolean;
-  }[]
-) => {
+  }[];
+  usage?: {
+    id?: string;
+    value: number;
+  };
+}) => {
   return async (req: Request, res: Response, next: () => any) => {
-    const key = req.headers.authorization?.replace("Bearer ", "") ? "":
-    if (!key) {
-        return res.status(401).send("Unauthorized")
-    }
+    try {
+      let originalPattern = req.route?.path as string | undefined;
+      console.log("originalPattern", originalPattern);
+      if (!originalPattern) {
+        originalPattern = req.app._router.stack.find((layer: any) => {
+          if (layer.route) {
+            return layer.route.path === req.path;
+          }
+          return false;
+        })?.route?.path;
+      }
 
-    const verifyApiKeyResponse = await oneloopClient.verifyApiKey({
-      key,
-      requestedScopes: scopes.map((scope) => {
-        return {
-          id: scope.id,
-          representation: scope.id,
-          read: scope.read ?? false,
-          create: scope.create ?? false,
-          update: scope.update ?? false,
-          del: scope.del ?? false,
-        };
-      }),
-    });
+      const isValidKey = await oneloopClient.verifyApiKey({
+        key: req.headers.authorization?.replace("Bearer ", "") ?? "",
+        requestedScopes:
+          config?.scopes?.map((scope) => {
+            return {
+              id: scope.id,
+              representation: scope.id,
+              read: scope.read ?? false,
+              create: scope.create ?? false,
+              update: scope.update ?? false,
+              del: scope.del ?? false,
+            };
+          }) ?? [],
+        billing: config?.usage
+          ? {
+              usage: config.usage.value,
+              useCustomerIdForBilling: config.usage.id ? false : true,
+              id: config.usage.id,
+            }
+          : undefined,
+        route: originalPattern,
+      });
 
-    if (verifyApiKeyResponse.status === "VALID") {
-      next();
-    } else {
-      res.status(401).send("Unauthorized");
+      if (isValidKey && isValidKey.status === "VALID") {
+        next();
+      } else {
+        res.status(401).send(`Unauthorized: ${isValidKey.status}`);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(`Internal server error: ${error}`);
     }
   };
 };
-
 ```
 
 ### Authenticate the API key
 
-Now, let's use the middleware in a FastApi route and authenticate the API key.
+Now, let's use the middleware in a Express route and authenticate the API key.
 
 ```typescript
 // Install the middleware on the express app
@@ -85,12 +112,40 @@ app.post("/profile", oneloopMiddleware(), handler);
 You can also check for permissions in your routes. Let's say you have a route that requires a specific read access for profile data.
 You want to check if the API key has the required scope before returning the data. You can pass that scope to the middleware.
 
-Let's modify the above route to check for `profile` read access.
+Let's modify the above route to check for `billing` read access.
+
+```typescript
+app.get(
+  "/billing",
+  oneloopMiddleware({ scopes: [{ id: "billing", read: true }] }),
+  getBillingInfo
+);
+```
+
+### Add usage to your API key
+
+You can add usage to your API key by passing the `usage` parameter to the middleware. This will allow you to track how much of your API is being used.
+Usage object takes in `value` and `id` (optional). If `id` is not passed, the usage will be tracked per customer based on the customerId in the API key.
+
+In the example below, we are passing in `customer_123----fine_tune` as the id. In this case we have built a custom meter for tracking the usage of fine-tuning a model for a customer by creating a hash of the customerId and the meter name.
 
 ```typescript
 app.post(
-  "/profile",
-  oneloopMiddleware([{ id: "profile", read: true }]),
-  handler
+  "/fine-tune",
+  oneloopMiddleware({ usage: { value: 3, id: "customer_123----fine_tune" } }),
+  fineTuneModel
 );
+```
+
+### Retrieving usage
+
+You can retrieve the usage of your API key by using Oneloop typescript SDK. Here's an example of how you can retrieve the usage of an API key.
+This will return the usage for the meterId that was passed in on a daily basis.
+
+```typescript
+const oneloopClient = new OneloopClient({
+  token: process.env.ONELOOP_KEY ?? "",
+});
+const meter = await oneloopClient.getBillingUsage("customer_123----fine_tune");
+res.send("Meter: " + meter + " Value: " + JSON.stringify(meter));
 ```
