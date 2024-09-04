@@ -47,13 +47,13 @@ curl -X POST 'https://prod.oneloop.ai/api/v1/api-key/verify' \
 ```
 
       ```typescript typescript
-      import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+      import { OneloopClient } from "@oneloop-hq/oneloop-ts";
 
-      const oneloopClient = new OneloopApiClient({
+      const oneloop = new OneloopClient({
         token: process.env.ONELOOP_SDK_KEY ?? "",
       });
 
-      oneloopClient.verifyApiKey({
+      oneloop.verifyApiKey({
         key: "<API-Key>",
         requestedScopes: [],
       });
@@ -61,16 +61,11 @@ curl -X POST 'https://prod.oneloop.ai/api/v1/api-key/verify' \
 
 
       ```python python
-      from oneloop_client import DefaultApi, Configuration, ApiClient
+      from oneloop_client.client import OneloopApi
 
-      configuration = Configuration(
-        host="https://prod.oneloop.ai",
-        access_token=os.environ.get("ONELOOP_API_KEY")
-      )
+      oneloop = OneloopApi(token="your-oneloop-api-key")
 
-      api_client = DefaultApi(ApiClient(configuration))
-
-      api_client.verify_api_key(
+      oneloop.verify_api_key(
         key="<API-Key>",
         requested_scopes=[]
       )

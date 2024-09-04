@@ -14,9 +14,9 @@ npm i @oneloop-hq/oneloop-ts
 ## Authentication
 
 ```typescript
-import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+import { OneloopClient } from "@oneloop-hq/oneloop-ts";
 
-const oneloopClient = new OneloopApiClient({
+const oneloop = new OneloopClient({
   token: process.env.ONELOOP_KEY ?? "",
 });
 ```
@@ -25,7 +25,7 @@ const oneloopClient = new OneloopApiClient({
 
 ```typescript
 app.get("/workspace", async (req: Request, res: Response) => {
-  const result: RetrieveWorkspaceResponse = await oneloopClient.getWorkspace();
+  const result: RetrieveWorkspaceResponse = await oneloop.getWorkspace();
   res.json(result);
 });
 ```
@@ -49,7 +49,7 @@ const verifyKeyRequest = {
   ],
 };
 
-const result = await oneloopClient.verifyApiKey(verifyKeyRequest);
+const result = await oneloop.verifyApiKey(verifyKeyRequest);
 if (result.status === "VALID") {
   // Create something
 }

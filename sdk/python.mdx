@@ -7,34 +7,18 @@ description: "Learn more about using Oneloop Python SDK"
 
 ## Installation
 
-``` bash bash
+```bash bash
 pip3 install oneloop-python
 ```
 
 ## Authentication
 
 ```python
+from oneloop_client.client import OneloopApi
+
 # Initialize the SDK client
-configuration = Configuration(
-    host="https://prod.oneloop.ai",
-    # SDK Key that was generated on the dashboard
-    # Ensure that this SDK key has the necessary permissions
-    access_token=os.environ.get("ONELOOP_API_KEY") 
-)
 
-oneloop_client = DefaultApi(ApiClient(configuration))
-```
-
-## Sample Usage
-
-```python
-@app.get("/api-key")
-async def generate_api_key():
-    api_key: CreateApiKeyResponse = oneloop_client.create_api_key()
-    api_key: CreateApiKeyResponseApiKey = api_key.key
-    # Actual API key
-    key: str = api_key.key
-    print (api_key)
+oneloop_client = OneloopApi(token="your-oneloop-api-key")
 ```
 
 ## Verify API Keys
@@ -42,12 +26,14 @@ async def generate_api_key():
 When your user calls your endpoints and you need to verify their API Key then you use the following:
 
 ```python
-from oneloop_client.models import VerifyApiKeyRequest, VerifyApiKeyResponse
+from oneloop_client.types import VerifyApiKeyResponse
 
-# Create the verify request
-verify_request = VerifyApiKeyRequest(
-    key="<API_KEY>", # The Api Key that was generated for the user (either through the SDK or dashboard)
-    requested_scopes=[
+# Verify the API key
+verify_response: VerifyApiKeyResponse = None
+try:
+    verify_response = oneloop_client.verify_api_key(
+      key="<API_KEY>", # The Api Key that was generated for the user (either through the SDK or dashboard)
+      requested_scopes=[
         {
             "id": "balance_transfer", # The requested scope
             "representation": "balance_transfer",
@@ -56,18 +42,12 @@ verify_request = VerifyApiKeyRequest(
             "update": False,
             "del": False
         }
-    ]
-)
-
-# Verify the API key
-verify_response: VerifyApiKeyResponse = None
-try:
-    verify_response = oneloop_client.verify_api_key(verify_request)
+    ])
 except Exception as e:
     error: ErrorResponse = json.loads(e.body)
     code = error['error']['code']
     message = error['error']['message']
-    raise HTTPException(status_code=code, detail=message)            
+    raise HTTPException(status_code=code, detail=message)
 
 if verify_response and verify_response.status != "VALID":
     raise HTTPException(status_code=401, detail=verify_response.status)

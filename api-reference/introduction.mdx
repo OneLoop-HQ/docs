@@ -21,34 +21,23 @@ If you are using one of the SDKs, then you can set the authorization header base
 
 The SDK Key can be generated in the [dashboard](https://dashboard.oneloop.ai)
 
-```typescript
-
-```
-
 <CodeGroup>
     ```typescript typescript
-    import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+    import { OneloopClient } from "@oneloop-hq/oneloop-ts";
 
-    const oneloopClient = new OneloopApiClient({
+    const oneloop = new OneloopClient({
       token: process.env.ONELOOP_KEY ?? "",
     });
 
-    const result = await oneloopClient.getWorkspace();
-    console.log(result);
+    const isKeyValid = await oneloopClient.verifyApiKey({key: "api-key", requestedScopes: []});
     ```
 
     ```python python
-    from oneloop_client import DefaultApi, Configuration, ApiClient
+    from oneloop_client.client import OneloopApi
 
-    configuration = Configuration(
-        host="https://prod.oneloop.ai",
-        access_token=os.environ.get("ONELOOP_API_KEY")
-    )
+    oneloop = OneloopApi(token="your-oneloop-api-key")
 
-    oneloop_client = DefaultApi(ApiClient(configuration))
-
-    workspaces: RetrieveWorkspaceResponse = oneloop_client.get_workspace()
-    print (workspaces)
+    is_key_valid = oneloop.verify_api_key(key="api-key", requested_scopes=[])
     ```
 
 </CodeGroup>

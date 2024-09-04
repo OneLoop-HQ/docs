@@ -32,9 +32,11 @@ pip install typing fastapi oneloop-python
 Let's first add the middleware that will be used to verify the API key. This will save you from having to write the same code in every route.
 
 ```python middleware.py
+import json
 from typing import List, TypedDict, Optional
 from fastapi import Request, HTTPException
-import json
+from oneloop_client.client import OneloopApi
+from oneloop_client.types import VerifyApiKeyResponse, ErrorResponse
 
 class ScopeObject(TypedDict):
     id: str
@@ -42,6 +44,8 @@ class ScopeObject(TypedDict):
     read: Optional[bool]
     update: Optional[bool]
     delete: Optional[bool]
+
+oneloop = OneloopApi(token="your-oneloop-api-key")
 
 def oneloop_middleware(scopes: List[ScopeObject] = []):
     async def middleware(request: Request):
@@ -51,7 +55,7 @@ def oneloop_middleware(scopes: List[ScopeObject] = []):
             raise HTTPException(status_code=401, detail="Customer API key is missing")
 
         # Create the verify request
-        verify_request = VerifyApiKeyRequest(
+        verify_request = oneloop.verify_api_key(
             key=auth_header.replace("Bearer ", ""),
             requested_scopes=[
                 {
@@ -68,7 +72,7 @@ def oneloop_middleware(scopes: List[ScopeObject] = []):
 
         try:
             # Verify the API key
-            verify_response: VerifyApiKeyResponse = api_client.verify_api_key(verify_request)
+            verify_response: VerifyApiKeyResponse = oneloop.verify_api_key(verify_request)
 
             if verify_response.status != "VALID":
               raise HTTPException(status_code=401, detail=verify_response.status)

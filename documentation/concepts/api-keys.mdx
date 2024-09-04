@@ -37,13 +37,13 @@ You can use our SDKs to create API Keys programmatically.
 
 <CodeGroup>
     ```typescript typescript
-    import { OneloopApiClient } from "@oneloop-hq/oneloop-ts";
+    import { OneloopClient } from "@oneloop-hq/oneloop-ts";
 
-    const oneloopClient = new OneloopApiClient({
+    const oneloop = new OneloopClient({
       token: process.env.ONELOOP_KEY ?? "",
     });
 
-    const createApiKeyResponse = await oneloopClient.createApiKey({
+    const createApiKeyResponse = await oneloop.createApiKey({
         name: "API Key",
         scopes: [{
             representation: "secure_endpoint",
@@ -66,18 +66,12 @@ You can use our SDKs to create API Keys programmatically.
     ```
 
     ```python python
-    from oneloop_client import DefaultApi, Configuration, ApiClient
+    from oneloop_client.client import OneloopApi
 
-    configuration = Configuration(
-        host="https://prod.oneloop.ai",
-        access_token=os.environ.get("ONELOOP_API_KEY")
-    )
+    oneloop = OneloopApi(token="your-oneloop-api-key")
 
-    oneloop_client = DefaultApi(ApiClient(configuration))
-
-    # Create the Api Key
-    request = CreateApiKeyRequest(
-        name="My API Key",
+    api_key: CreateApiKeyResponse = oneloop.create_api_key(
+      name="My API Key",
         workspace_id="workspace_id", # The workspace to create the key in
         customer_id="customer_id", # The customer to associate the API key with
         # The scopes that the API key should have
@@ -93,8 +87,6 @@ You can use our SDKs to create API Keys programmatically.
         ],
         enabled=True
     )
-
-    api_key: CreateApiKeyResponse = oneloop_client.create_api_key(request)
     ```
 
 </CodeGroup>
