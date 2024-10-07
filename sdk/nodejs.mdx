@@ -1,56 +1,71 @@
 ---
 title: "NodeJs"
-description: "Learn more about using Oneloop NodeJs SDK"
+description: "Learn how to add authentication to your NodeJS apps using Oneloop"
 ---
+
+This documentation is around adding authentication to your APIs written in javascript or typescript. Our NodeJS sdk is written natively in typescript and can be used in any nodeJS project.
+
+If you are using javascript then you can use this same sdk but typescript types will not be available.
 
 [Link to NPM package](https://www.npmjs.com/package/@oneloop-hq/oneloop-ts)
 
 ## Installation
 
+Let's get started by installing the package
+
 ```bash bash
-npm i @oneloop-hq/oneloop-ts
+npm i @oneloop-hq/oneloop-ts@latest
 ```
 
-## Authentication
+## Initialize the SDK
+
+To start using Oneloop in your project, you need to initialize the sdk with your Oneloop SDK Key. You can find this key in your [Oneloop Dashboard](https://dashboard.oneloop.ai/sdk-keys-manager)
 
 ```typescript
 import { OneloopClient } from "@oneloop-hq/oneloop-ts";
 
 const oneloop = new OneloopClient({
-  token: process.env.ONELOOP_KEY ?? "",
+  token: process.env.ONELOOP_SDK_KEY ?? "",
 });
 ```
 
-## Sample Usage
+## Using Oneloop SDK
+
+There are many features available in Oneloop. But the most important one is verifying API keys. This is the point where you get a request from your user with an API key in the authorization header.
+
+### Verify API Keys
+
+With Oneloop, verifying API Key is just one line of code. With this verification, you get to know whether the api key is valid or not. If not valid, why not valid? And any metadata you have associated with the api key, like customer id, usage limit, etc.
 
 ```typescript
-app.get("/workspace", async (req: Request, res: Response) => {
-  const result: RetrieveWorkspaceResponse = await oneloop.getWorkspace();
-  res.json(result);
+const verifyKey = await oneloop.verification({
+  key: "CUSTOMER_API_KEY",
+  requestedScopes: [],
 });
+
+console.log("API Key status: ", verifyKey.status);
 ```
 
-## Verify API Keys
+### Check for permissions
 
-When your user calls your endpoints and you need to verify their API Key then you use the following:
+Many times you would want to verify if a api key has permission to access a specific resource. For example, you want to allow users to access a specific endpoint but not another.
+
+You can do this by passing the requested scopes to the verification function. In this case, let's say you want to check if the api key is valid and has read permission `user`
 
 ```typescript
-const verifyKeyRequest = {
-  key: "CUSTOMER_API_KEY", // This is the API key that you generated prior
+const verifyKey = await oneloop.verification({
+  key: "CUSTOMER_API_KEY",
   requestedScopes: [
     {
-      id: "secure_endpoint",
-      representation: "secure_endpoint",
-      read: false,
-      create: true,
+      id: "user",
+      representation: "user",
+      read: true,
+      create: false,
       update: false,
       del: false,
     },
   ],
-};
-
-const result = await oneloop.verifyApiKey(verifyKeyRequest);
-if (result.status === "VALID") {
-  // Create something
-}
+});
 ```
+
+###
