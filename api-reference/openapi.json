@@ -202,13 +202,6 @@
             "minimum": 0,
             "exclusiveMinimum": true
           },
-          "totalUsageLeft": {
-            "type": "integer",
-            "nullable": true,
-            "minimum": 0,
-            "exclusiveMinimum": true
-          },
-          "limitUsage": { "type": "boolean" },
           "scopes": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/ApiKeyScope" }
@@ -218,7 +211,8 @@
           "deleted": { "type": "boolean" },
           "createdAt": { "type": "string" },
           "updatedAt": { "type": "string" },
-          "lastUsedAt": { "type": "string", "nullable": true }
+          "lastUsedAt": { "type": "string", "nullable": true },
+          "billingId": { "type": "string", "nullable": true }
         },
         "required": [
           "id",
@@ -226,15 +220,14 @@
           "maskedKey",
           "prefix",
           "expiresAt",
-          "totalUsageLeft",
-          "limitUsage",
           "scopes",
           "enabled",
           "customerId",
           "deleted",
           "createdAt",
           "updatedAt",
-          "lastUsedAt"
+          "lastUsedAt",
+          "billingId"
         ]
       },
       "CreateApiKeyResponse": {
@@ -264,11 +257,6 @@
             "minimum": 0,
             "exclusiveMinimum": true
           },
-          "totalUsageAllowed": {
-            "type": "integer",
-            "minimum": 0,
-            "exclusiveMinimum": true
-          },
           "scopes": {
             "type": "array",
             "items": {
@@ -284,7 +272,12 @@
             }
           },
           "enabled": { "type": "boolean" },
-          "customerId": { "type": "string" }
+          "customerId": { "type": "string" },
+          "externalMeterId": { "type": "string" },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
         },
         "required": ["name", "workspaceId", "scopes", "enabled", "customerId"]
       },
@@ -303,9 +296,32 @@
         "properties": { "apiKey": { "$ref": "#/components/schemas/ApiKey" } },
         "required": ["apiKey"]
       },
+      "CustomerBillingMeter": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "id": { "type": "string" },
+          "totalCredits": { "type": "string", "pattern": "^d+$" },
+          "usedCredits": { "type": "string", "pattern": "^d+$" },
+          "allowOverages": { "type": "boolean" },
+          "spendCap": { "type": "string", "nullable": true, "pattern": "^d+$" },
+          "createdAt": { "type": "string" },
+          "updatedAt": { "type": "string" }
+        },
+        "required": [
+          "id",
+          "totalCredits",
+          "usedCredits",
+          "allowOverages",
+          "spendCap",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "VerifyApiKeyResponse": {
         "type": "object",
         "properties": {
+          "apiKeyId": { "type": "string" },
           "expiresAt": {
             "type": "integer",
             "nullable": true,
@@ -336,9 +352,29 @@
               "resetAt": { "type": "integer" }
             },
             "required": ["remaining", "resetAt"]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "billing": { "$ref": "#/components/schemas/CustomerBillingMeter" },
+          "externalMeterId": { "type": "string", "nullable": true },
+          "customerId": { "type": "string", "nullable": true },
+          "scopes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ApiKeyScope" }
           }
         },
-        "required": ["expiresAt", "requestedScopes", "status"]
+        "required": [
+          "apiKeyId",
+          "expiresAt",
+          "requestedScopes",
+          "status",
+          "billing",
+          "externalMeterId",
+          "customerId",
+          "scopes"
+        ]
       },
       "VerifyApiKeyRequest": {
         "type": "object",
@@ -352,18 +388,13 @@
           "billing": {
             "type": "object",
             "properties": {
-              "id": { "type": "string" },
-              "useCustomerIdForBilling": {
-                "type": "boolean",
-                "default": false
-              },
               "usage": {
-                "type": "integer",
-                "minimum": 0,
-                "exclusiveMinimum": true
-              }
-            },
-            "required": ["usage"]
+                "type": "string",
+                "pattern": "^\\d+$",
+                "default": "0"
+              },
+              "usageName": { "type": "string" }
+            }
           },
           "rateLimitConfig": {
             "type": "object",
@@ -379,6 +410,16 @@
           }
         },
         "required": ["key", "requestedScopes"]
+      },
+      "RecordUsageApiKeyResponse": { "type": "object", "properties": {} },
+      "RecordUsageApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "usage": { "type": "string", "pattern": "^\\d+$", "default": "0" },
+          "usageName": { "type": "string" }
+        },
+        "required": ["key"]
       },
       "RotateApiKeyResponse": {
         "type": "object",
@@ -401,22 +442,6 @@
         "properties": { "apiKey": { "$ref": "#/components/schemas/ApiKey" } },
         "required": ["apiKey"]
       },
-      "RefillApiKeyResponse": {
-        "type": "object",
-        "properties": { "apiKey": { "$ref": "#/components/schemas/ApiKey" } },
-        "required": ["apiKey"]
-      },
-      "RefillApiKeyRequest": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "type": "integer",
-            "minimum": 0,
-            "exclusiveMinimum": true
-          }
-        },
-        "required": ["amount"]
-      },
       "EditApiKeyResponse": {
         "type": "object",
         "properties": { "apiKey": { "$ref": "#/components/schemas/ApiKey" } },
@@ -432,6 +457,131 @@
             "items": { "$ref": "#/components/schemas/ApiKeyScope" }
           }
         }
+      },
+      "RetrieveCustomerBillingMeterUsageResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "billingId": { "type": "string" },
+                "day": { "type": "string" },
+                "totalBillingUsage": { "type": "string", "pattern": "^d+$" },
+                "billingUsageName": { "type": "string" }
+              },
+              "required": [
+                "billingId",
+                "day",
+                "totalBillingUsage",
+                "billingUsageName"
+              ]
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "CreateCustomerBillingMeterResponse": {
+        "type": "object",
+        "properties": {
+          "billing": { "$ref": "#/components/schemas/CustomerBillingMeter" }
+        },
+        "required": ["billing"]
+      },
+      "CreateCustomerBillingMeterRequest": {
+        "type": "object",
+        "properties": {
+          "totalCredits": {
+            "type": "string",
+            "pattern": "^\\d+$",
+            "default": "0"
+          },
+          "allowOverages": { "type": "boolean", "default": false },
+          "spendCap": { "type": "string", "pattern": "^\\d+$" },
+          "externalMeterId": { "type": "string" },
+          "workspaceId": { "type": "string" }
+        },
+        "required": ["externalMeterId", "workspaceId"]
+      },
+      "RefillCustomerBillingMeterResponse": {
+        "type": "object",
+        "properties": {
+          "billing": { "$ref": "#/components/schemas/CustomerBillingMeter" }
+        },
+        "required": ["billing"]
+      },
+      "RefillCustomerBillingMeterRequest": {
+        "type": "object",
+        "properties": {
+          "workspaceId": { "type": "string" },
+          "externalMeterId": { "type": "string" },
+          "refill": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": ["workspaceId", "externalMeterId"]
+      },
+      "GetCustomerBillingMeterResponse": {
+        "type": "object",
+        "properties": {
+          "billing": { "$ref": "#/components/schemas/CustomerBillingMeter" }
+        },
+        "required": ["billing"]
+      },
+      "MigrateApiKeyResponse": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "allOf": [
+              { "$ref": "#/components/schemas/ApiKey" },
+              {
+                "type": "object",
+                "properties": { "key": { "type": "string" } },
+                "required": ["key"]
+              }
+            ]
+          }
+        },
+        "required": ["apiKey"]
+      },
+      "MigrateApiKeyRequest": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "workspaceId": { "type": "string" },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "representation": { "type": "string" },
+                "create": { "type": "boolean" },
+                "read": { "type": "boolean" },
+                "update": { "type": "boolean" },
+                "del": { "type": "boolean" }
+              },
+              "required": ["representation", "create", "read", "update", "del"]
+            }
+          },
+          "enabled": { "type": "boolean" },
+          "customerId": { "type": "string" },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "workspaceId",
+          "scopes",
+          "enabled",
+          "customerId"
+        ]
       }
     },
     "parameters": {}
@@ -533,7 +683,7 @@
     "/api/v1/workspace/{id}": {
       "get": {
         "operationId": "getWorkspaceById",
-        "summary": "Retrieve a workspace",
+        "summary": "Retrieve a workspace by Id",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
@@ -1073,6 +1223,58 @@
         }
       }
     },
+    "/api/v1/api-key/record-usage": {
+      "post": {
+        "operationId": "recordApiKeyUsage",
+        "summary": "Record API key usage",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordUsageApiKeyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The record usage result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordUsageApiKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/workspace/{id}/api-key/{akid}/rotate": {
       "post": {
         "operationId": "rotateApiKey",
@@ -1130,70 +1332,6 @@
         }
       }
     },
-    "/api/v1/workspace/{id}/api-key/{akid}/refill": {
-      "post": {
-        "operationId": "refillApiKey",
-        "summary": "Refill a key for a given workspace",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          {
-            "schema": { "type": "string", "description": "The workspace id." },
-            "required": true,
-            "name": "id",
-            "in": "path"
-          },
-          {
-            "schema": { "type": "string", "description": "The API key id." },
-            "required": true,
-            "name": "akid",
-            "in": "path"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/RefillApiKeyRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The updated key",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefillApiKeyResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/link-token": {
       "post": {
         "operationId": "generateLinkToken",
@@ -1206,7 +1344,8 @@
                 "type": "object",
                 "properties": {
                   "customerId": { "type": "string" },
-                  "workspaceId": { "type": "string" }
+                  "workspaceId": { "type": "string" },
+                  "externalBillingId": { "type": "string" }
                 },
                 "required": ["customerId", "workspaceId"]
               }
@@ -1288,7 +1427,8 @@
                       "exclusiveMinimum": true
                     },
                     "workspaceId": { "type": "string" },
-                    "customerId": { "type": "string" }
+                    "customerId": { "type": "string" },
+                    "externalBillingId": { "type": "string" }
                   },
                   "required": [
                     "valid",
@@ -1346,22 +1486,219 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "billingId": { "type": "string" },
-                          "day": { "type": "string" },
-                          "totalBillingUsage": { "type": "number" }
-                        },
-                        "required": ["billingId", "day", "totalBillingUsage"]
-                      }
-                    }
-                  },
-                  "required": ["data"]
+                  "$ref": "#/components/schemas/RetrieveCustomerBillingMeterUsageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-billing": {
+      "post": {
+        "operationId": "createCustomerBilling",
+        "summary": "Create customer billing",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerBillingMeterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created billing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCustomerBillingMeterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getCustomerBilling",
+        "summary": "Retrieve customer billing",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "schema": { "type": "string", "description": "The workspace id." },
+            "required": true,
+            "name": "workspaceId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "The external meter id."
+            },
+            "required": true,
+            "name": "externalMeterId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer billing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCustomerBillingMeterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-billing/refill": {
+      "post": {
+        "operationId": "refillBillingLimit",
+        "summary": "Refill the billing limit",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefillCustomerBillingMeterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated billing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefillCustomerBillingMeterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api-key/migrate": {
+      "post": {
+        "operationId": "migrateApiKey",
+        "summary": "Migrate an API key",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MigrateApiKeyRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The migrated key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MigrateApiKeyResponse"
                 }
               }
             }

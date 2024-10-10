@@ -76,6 +76,7 @@
       "pages": [
         "api-reference/endpoints/retrieve-a-workspace",
         "api-reference/endpoints/create-a-workspace",
+        "api-reference/endpoints/retrieve-a-workspace-by-id",
         "api-reference/endpoints/updates-a-workspace"
       ]
     },
@@ -87,17 +88,25 @@
       ]
     },
     {
-      "group": "Api Keys",
+      "group": "API Keys",
       "pages": [
         "api-reference/endpoints/create-an-api-key",
         "api-reference/endpoints/retrieve-api-keys-for-a-workspace",
         "api-reference/endpoints/retrieve-an-api-key-by-id",
-        "api-reference/endpoints/verify-a-key-for-a-given-workspace",
-        "api-reference/endpoints/rotate-a-key-for-a-given-workspace",
         "api-reference/endpoints/deletes-a-key-for-a-given-workspace",
         "api-reference/endpoints/edit-an-api-key",
-        "api-reference/endpoints/refill-a-key-for-a-given-workspace",
-        "api-reference/endpoints/retrieve-billing-usage-information-for-a-given-billing-id"
+        "api-reference/endpoints/verify-a-key-for-a-given-workspace",
+        "api-reference/endpoints/rotate-a-key-for-a-given-workspace"
+      ]
+    },
+    {
+      "group": "Usage Metering",
+      "pages": [
+        "api-reference/endpoints/retrieve-billing-usage-information-for-a-given-billing-id",
+        "api-reference/endpoints/retrieve-customer-billing",
+        "api-reference/endpoints/create-customer-billing",
+        "api-reference/endpoints/refill-the-billing-limit",
+        "api-reference/endpoints/record-api-key-usage"
       ]
     },
     {
@@ -106,6 +115,10 @@
         "api-reference/endpoints/generate-a-link-token",
         "api-reference/endpoints/validate-a-link-token"
       ]
+    },
+    {
+      "group": "Migrations",
+      "pages": ["api-reference/endpoints/migrate-an-api-key"]
     },
     {
       "group": "SDK",
