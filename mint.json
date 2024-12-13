@@ -100,6 +100,13 @@
       ]
     },
     {
+      "group": "JWT",
+      "pages": [
+        "api-reference/endpoints/create-a-jwt",
+        "api-reference/endpoints/verify-a-jwt"
+      ]
+    },
+    {
       "group": "Usage Metering",
       "pages": [
         "api-reference/endpoints/retrieve-billing-usage-information-for-a-given-billing-id",

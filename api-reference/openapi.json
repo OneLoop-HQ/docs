@@ -683,7 +683,7 @@
     "/api/v1/workspace/{id}": {
       "get": {
         "operationId": "getWorkspaceById",
-        "summary": "Retrieve a workspace by Id",
+        "summary": "Retrieve a workspace",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
@@ -1699,6 +1699,160 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MigrateApiKeyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jwt": {
+      "post": {
+        "operationId": "createJwt",
+        "summary": "Create a JWT",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                  },
+                  "aud": { "type": "string" },
+                  "exp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true,
+                    "default": 3600
+                  }
+                },
+                "required": ["payload"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "jwt": { "type": "string" } },
+                  "required": ["jwt"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jwt/verify": {
+      "post": {
+        "operationId": "verifyJwt",
+        "summary": "Verify a JWT",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jwt": { "type": "string" },
+                  "rateLimitConfig": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "limit": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": true
+                      },
+                      "interval": { "type": "string" }
+                    },
+                    "required": ["id", "limit", "interval"]
+                  }
+                },
+                "required": ["jwt"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": ["VALID", "INVALID"]
+                    },
+                    "payload": {
+                      "type": "object",
+                      "additionalProperties": { "type": "string" }
+                    },
+                    "aud": { "type": "string" },
+                    "exp": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    }
+                  },
+                  "required": ["status", "payload", "exp"]
                 }
               }
             }
